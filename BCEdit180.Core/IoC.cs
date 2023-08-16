@@ -1,5 +1,5 @@
 using System;
-using System.Reflection;
+using BCEdit180.Core.Editor.Classes.Editors;
 using BCEdit180.Core.Services;
 using BCEdit180.Core.Shortcuts.Dialogs;
 using BCEdit180.Core.Views.Dialogs.FilePicking;
@@ -38,26 +38,10 @@ namespace BCEdit180.Core {
 
         public static ITranslator Translator => Provide<ITranslator>();
 
+        public static IAccessEditorService AccessEditors => Provide<IAccessEditorService>();
+        public static IDescEditorService TypeDescEditors => Provide<IDescEditorService>();
+
         public static Action<string> BroadcastShortcutChanged { get; set; }
-
-        public static void LoadServicesFromAttributes() {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
-                foreach (TypeInfo typeInfo in assembly.DefinedTypes) {
-                    ServiceImplementationAttribute implementationAttribute = typeInfo.GetCustomAttribute<ServiceImplementationAttribute>();
-                    if (implementationAttribute != null && implementationAttribute.Type != null) {
-                        object instance;
-                        try {
-                            instance = Activator.CreateInstance(typeInfo);
-                        }
-                        catch (Exception e) {
-                            throw new Exception($"Failed to create implementation of {implementationAttribute.Type} as {typeInfo}", e);
-                        }
-
-                        Instance.Register(implementationAttribute.Type, instance);
-                    }
-                }
-            }
-        }
 
         public static T Provide<T>() => Instance.GetService<T>();
     }

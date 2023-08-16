@@ -268,5 +268,12 @@ namespace BCEdit180.Core.Utils {
 
             return className;
         }
+
+        public static int CountCharsAtStart(string str, char character, int startIndex = 0) {
+            int j = startIndex, len = str.Length;
+            while (j < len && str[j] == character)
+                ++j;
+            return j - startIndex;
+        }
     }
 }

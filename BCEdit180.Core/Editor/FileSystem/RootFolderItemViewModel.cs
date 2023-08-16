@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using BCEdit180.Core.Editor.FileSystem.Physical;
 
 namespace BCEdit180.Core.Editor.FileSystem {
     public class RootFolderItemViewModel : BaseExplorerItemViewModel {

@@ -1,10 +1,8 @@
 ﻿using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;
 
-namespace BCEdit180.Core.Editor.Classes.Editors
-{
-    public class ClassAccessEditorViewModel : BaseConfirmableDialogViewModel
-    {
+namespace BCEdit180.Core.Editor.Classes.Editors {
+    public class ClassAccessEditorViewModel : BaseConfirmableDialogViewModel {
         private bool flagPublic;
         private bool flagProtected;
         private bool flagPrivate;
@@ -18,117 +16,93 @@ namespace BCEdit180.Core.Editor.Classes.Editors
         private bool flagSuper;
         private bool flagSynthetic;
 
-        public bool FlagPublic
-        {
+        public bool FlagPublic {
             get => this.flagPublic;
-            set
-            {
+            set {
                 this.RaisePropertyChanged(ref this.flagPublic, value);
-                if (value)
-                {
+                if (value) {
                     this.FlagProtected = this.FlagPrivate = false;
                 }
             }
         }
 
-        public bool FlagProtected
-        {
+        public bool FlagProtected {
             get => this.flagProtected;
-            set
-            {
+            set {
                 this.RaisePropertyChanged(ref this.flagProtected, value);
-                if (value)
-                {
+                if (value) {
                     this.FlagPublic = this.FlagPrivate = false;
                 }
             }
         }
 
-        public bool FlagPrivate
-        {
+        public bool FlagPrivate {
             get => this.flagPrivate;
-            set
-            {
+            set {
                 this.RaisePropertyChanged(ref this.flagPrivate, value);
-                if (value)
-                {
+                if (value) {
                     this.FlagPublic = this.FlagProtected = false;
                 }
             }
         }
 
-        public bool FlagStatic
-        {
+        public bool FlagStatic {
             get => this.flagStatic;
-            set
-            {
+            set {
                 this.RaisePropertyChanged(ref this.flagStatic, value);
-                if (value)
-                {
+                if (value) {
                     this.FlagAbstract = false;
                 }
             }
         }
 
-        public bool FlagAbstract
-        {
+        public bool FlagAbstract {
             get => this.flagAbstract;
-            set
-            {
+            set {
                 this.RaisePropertyChanged(ref this.flagAbstract, value);
-                if (value)
-                {
+                if (value) {
                     this.FlagStatic = false;
                 }
             }
         }
 
-        public bool FlagFinal
-        {
+        public bool FlagFinal {
             get => this.flagFinal;
             set => this.RaisePropertyChanged(ref this.flagFinal, value);
         }
 
-        public bool FlagStrict
-        {
+        public bool FlagStrict {
             get => this.flagStrict;
             set => this.RaisePropertyChanged(ref this.flagStrict, value);
         }
 
-        public bool FlagAnnotation
-        {
+        public bool FlagAnnotation {
             get => this.flagAnnotation;
             set => this.RaisePropertyChanged(ref this.flagAnnotation, value);
         }
 
-        public bool FlagEnum
-        {
+        public bool FlagEnum {
             get => this.flagEnum;
             set => this.RaisePropertyChanged(ref this.flagEnum, value);
         }
 
-        public bool FlagInterface
-        {
+        public bool FlagInterface {
             get => this.flagInterface;
             set => this.RaisePropertyChanged(ref this.flagInterface, value);
         }
 
-        public bool FlagSuper
-        {
+        public bool FlagSuper {
             get => this.flagSuper;
             set => this.RaisePropertyChanged(ref this.flagSuper, value);
         }
 
-        public bool FlagSynthetic
-        {
+        public bool FlagSynthetic {
             get => this.flagSynthetic;
             set => this.RaisePropertyChanged(ref this.flagSynthetic, value);
         }
 
-        public int RawModifiers
-        {
-            get
-            {
+        public int RawModifiers {
+            get {
                 int value = 0;
                 value |= this.flagPublic ? 1 : 0;
                 value |= this.flagProtected ? 4 : 0;
@@ -144,8 +118,7 @@ namespace BCEdit180.Core.Editor.Classes.Editors
                 value |= this.flagSynthetic ? 4096 : 0;
                 return value;
             }
-            set
-            {
+            set {
                 this.FlagPublic = (value & 1) != 0;
                 this.FlagProtected = (value & 4) != 0;
                 this.FlagPrivate = (value & 2) != 0;
@@ -161,15 +134,12 @@ namespace BCEdit180.Core.Editor.Classes.Editors
             }
         }
 
-        public ClassAccessModifiers Modifiers
-        {
-            get => (ClassAccessModifiers)this.RawModifiers;
-            set => this.RawModifiers = (int)value;
+        public ClassAccessModifiers Modifiers {
+            get => (ClassAccessModifiers) this.RawModifiers;
+            set => this.RawModifiers = (int) value;
         }
 
-        public ClassAccessEditorViewModel(IDialog dialog) : base(dialog)
-        {
-
+        public ClassAccessEditorViewModel(IDialog dialog) : base(dialog) {
         }
     }
 }

@@ -1,5 +1,3 @@
-using System.Windows.Input;
-using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;
 using JavaAsm.CustomAttributes;
 

@@ -15,15 +15,26 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
             set => this.RaisePropertyChanged(ref this.returnType, value);
         }
 
-        private TypeDescViewModel selectedParameter;
-        public TypeDescViewModel SelectedParameter {
-            get => this.selectedParameter;
-            set => this.RaisePropertyChanged(ref this.selectedParameter, value);
-        }
-
-        public MethodDescriptor Descriptor => new MethodDescriptor(this.ReturnType ?? new TypeDescriptor(PrimitiveType.Void, 0), this.Parameters.Select(a => a.TypeDescriptor).ToList());
-
         public ObservableCollection<TypeDescViewModel> Parameters { get; }
+
+        public ObservableCollection<TypeDescViewModel> SelectedParameters { get; }
+
+        /// <summary>
+        /// Gets or sets the descriptor. Setting this property will modify <see cref="ReturnType"/> and <see cref="Parameters"/> in this instance
+        /// </summary>
+        public MethodDescriptor Descriptor {
+            get => new MethodDescriptor(this.ReturnType ?? new TypeDescriptor(PrimitiveType.Void, 0), this.Parameters.Select(a => a.TypeDescriptor).ToList());
+            set {
+                this.Parameters.Clear();
+                if (value == null) {
+                    this.ReturnType = new TypeDescriptor(PrimitiveType.Void, 0);
+                }
+                else {
+                    this.ReturnType = value.ReturnType;
+                    this.Parameters.AddAll(value.ArgumentTypes.Select(x => new TypeDescViewModel(x)));
+                }
+            }
+        }
 
         public ICommand AddNewParameterCommand { get; }
 
@@ -33,6 +44,7 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
 
         public MethodDescEditorViewModel(IDialog dialog) : base(dialog) {
             this.Parameters = new ObservableCollection<TypeDescViewModel>();
+            this.SelectedParameters = new ObservableCollection<TypeDescViewModel>();
             this.ReturnType = new TypeDescriptor(PrimitiveType.Void, 0);
             this.AddNewParameterCommand = new AsyncRelayCommand(this.AddNewParameter);
             this.RemoveSelectedCommand = new RelayCommand(this.RemoveSelectedAction);
@@ -40,8 +52,7 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
         }
 
         public MethodDescEditorViewModel(IDialog dialog, MethodDescriptor desc) : this(dialog) {
-            this.Parameters.AddAll(desc.ArgumentTypes.Select(a => new TypeDescViewModel(a)));
-            this.ReturnType = desc.ReturnType;
+            this.Descriptor = desc;
         }
 
         public async Task EditReturnType() {
@@ -59,11 +70,8 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
         }
 
         public void RemoveSelectedAction() {
-            if (this.SelectedParameter != null) {
-                this.Parameters.Remove(this.SelectedParameter);
-                if (this.Parameters.Count > 0) {
-                    this.SelectedParameter = this.Parameters[this.Parameters.Count - 1];
-                }
+            foreach (TypeDescViewModel desc in this.SelectedParameters) {
+                this.Parameters.Remove(desc);
             }
         }
     }

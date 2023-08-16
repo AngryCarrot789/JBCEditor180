@@ -7,24 +7,26 @@
               xmlns:v="clr-namespace:BCEdit180.Views"
               xmlns:attached="clr-namespace:BCEdit180.Themes.Attached"
               mc:Ignorable="d"
-              Title="Edit field access" Height="300" Width="200">
+              Title="Edit field access" Height="300" Width="180"
+              Style="{DynamicResource CustomWindowStyleEx}"
+              WindowStyle="ToolWindow" ResizeMode="NoResize">
     <Window.InputBindings>
-        <KeyBinding Key="Enter" Command="{Binding ConfirmCommand, Mode=OneTime}"/>
-        <KeyBinding Key="Esc" Command="{Binding CancelCommand, Mode=OneTime}"/>
+        <KeyBinding Key="Enter" Command="{Binding ConfirmCommand, Mode=OneTime}" />
+        <KeyBinding Key="Esc" Command="{Binding CancelCommand, Mode=OneTime}" />
     </Window.InputBindings>
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="12,12,12,15" Orientation="Vertical">
             <StackPanel>
-                <CheckBox IsChecked="{Binding FlagPublic, UpdateSourceTrigger=PropertyChanged}" Content="Public" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <CheckBox IsChecked="{Binding FlagProtected, UpdateSourceTrigger=PropertyChanged}" Content="Protected" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <CheckBox IsChecked="{Binding FlagPrivate, UpdateSourceTrigger=PropertyChanged}" Content="Private" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <Separator/>
-                <CheckBox IsChecked="{Binding FlagStatic, UpdateSourceTrigger=PropertyChanged}" Content="Static" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <Separator/>
-                <CheckBox IsChecked="{Binding FlagTransient, UpdateSourceTrigger=PropertyChanged}"  Content="Transient" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <CheckBox IsChecked="{Binding FlagVolatile, UpdateSourceTrigger=PropertyChanged}"   Content="Volatile" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <CheckBox IsChecked="{Binding FlagFinal, UpdateSourceTrigger=PropertyChanged}"      Content="Final" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
-                <CheckBox IsChecked="{Binding FlagSynthetic, UpdateSourceTrigger=PropertyChanged}"  Content="Synthetic" VerticalAlignment="Top" Margin="0 0 0 1" Height="20"/>
+                <CheckBox IsChecked="{Binding FlagPublic, UpdateSourceTrigger=PropertyChanged}" Content="Public" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagProtected, UpdateSourceTrigger=PropertyChanged}" Content="Protected" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagPrivate, UpdateSourceTrigger=PropertyChanged}" Content="Private" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <Separator />
+                <CheckBox IsChecked="{Binding FlagStatic, UpdateSourceTrigger=PropertyChanged}" Content="Static" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <Separator />
+                <CheckBox IsChecked="{Binding FlagTransient, UpdateSourceTrigger=PropertyChanged}" Content="Transient" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagVolatile, UpdateSourceTrigger=PropertyChanged}" Content="Volatile" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagFinal, UpdateSourceTrigger=PropertyChanged}" Content="Final" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagSynthetic, UpdateSourceTrigger=PropertyChanged}" Content="Synthetic" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
             </StackPanel>
         </StackPanel>
         <Border DockPanel.Dock="Bottom" VerticalAlignment="Bottom" x:Name="ButtonBarBorder" Background="{DynamicResource ABrush.Tone4.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" BorderThickness="0,1,0,0">

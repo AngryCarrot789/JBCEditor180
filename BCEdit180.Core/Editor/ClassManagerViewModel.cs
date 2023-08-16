@@ -4,7 +4,6 @@ using System.Collections.ObjectModel;
 using System.IO;
 using BCEdit180.Core.Editor.Classes;
 using BCEdit180.Core.Editor.FileSystem.Physical;
-using BCEdit180.Core.Editor.FileSystem.Zip;
 using JavaAsm;
 using JavaAsm.Instructions;
 using JavaAsm.Instructions.Types;

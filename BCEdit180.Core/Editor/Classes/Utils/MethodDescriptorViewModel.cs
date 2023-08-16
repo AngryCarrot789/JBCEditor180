@@ -1,6 +1,4 @@
-using System.Windows.Input;
 using BCEdit180.Core.Editor.Classes.Methods;
-using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;
 
 namespace BCEdit180.Core.Editor.Classes.Utils {

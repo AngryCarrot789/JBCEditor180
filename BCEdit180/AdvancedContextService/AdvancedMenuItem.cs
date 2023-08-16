@@ -1,12 +1,8 @@
 using System;
-using System.IO;
 using System.Reflection;
-using System.Reflection.Emit;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Threading;
 using BCEdit180.Core;
 using BCEdit180.Core.Utils;
 using BCEdit180.Resources;

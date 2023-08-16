@@ -8,7 +8,9 @@
               xmlns:desc="clr-namespace:BCEdit180.Core.Editor.Classes.Editors.Desc;assembly=BCEdit180.Core"
               mc:Ignorable="d"
               Title="Edit type desc" Height="435" Width="300"
-              d:DataContext="{d:DesignInstance desc:MethodDescEditorViewModel}">
+              d:DataContext="{d:DesignInstance desc:MethodDescEditorViewModel}"
+              Style="{DynamicResource CustomWindowStyleEx}"
+              WindowStyle="ToolWindow" ResizeMode="NoResize">
     <Window.InputBindings>
         <KeyBinding Key="Enter" Command="{Binding ConfirmCommand, Mode=OneTime}" />
         <KeyBinding Key="Esc" Command="{Binding CancelCommand, Mode=OneTime}" />

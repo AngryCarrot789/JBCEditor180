@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Windows.Input;
+using System.Net;
 using BCEdit180.Core.Views.Dialogs.UserInputs;
 using JavaAsm;
 
@@ -75,7 +75,9 @@ namespace BCEdit180.Core.Editor.Classes {
         public AsyncRelayCommand<ClassNameViewModel> RenameInterfaceCommand { get; }
         public AsyncRelayCommand AddNewInterfaceCommand { get; set; }
 
-        private readonly InputValidator InterfaceNameValidator;
+        public AsyncRelayCommand EditAccessCommand { get; }
+
+        public readonly InputValidator InterfaceNameValidator;
 
         public ClassInfoViewModel(ClassViewModel klass) {
             this.Class = klass;
@@ -111,6 +113,13 @@ namespace BCEdit180.Core.Editor.Classes {
                     if (this.Interfaces.All(y => y.FullName != name)) {
                         this.Interfaces.Add(new ClassNameViewModel(name));
                     }
+                }
+            });
+
+            this.EditAccessCommand = new AsyncRelayCommand(async () => {
+                ClassAccessModifiers? result = await IoC.AccessEditors.EditClassAccessAsync(this.AccessFlags);
+                if (result.HasValue) {
+                    this.AccessFlags = result.Value;
                 }
             });
         }

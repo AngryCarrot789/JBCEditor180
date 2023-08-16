@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Windows.Input;
 using JavaAsm.Instructions;
 using JavaAsm.Instructions.Types;
 

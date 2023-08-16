@@ -1,4 +1,3 @@
-using System;
 using BCEdit180.Core.Editor.Classes.Bytecode.Locals;
 using BCEdit180.Core.Editor.Classes.ExceptionTable;
 using BCEdit180.Core.Editor.Classes.Methods;

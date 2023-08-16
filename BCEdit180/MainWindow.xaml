@@ -30,6 +30,7 @@
                 xmlns:editorControls="clr-namespace:BCEdit180.Editor.Controls.Bytecode.EditorControls"
                 xmlns:locals="clr-namespace:BCEdit180.Core.Editor.Classes.Bytecode.Locals;assembly=BCEdit180.Core"
                 xmlns:exceptionTable="clr-namespace:BCEdit180.Core.Editor.Classes.ExceptionTable;assembly=BCEdit180.Core"
+                xmlns:fields="clr-namespace:BCEdit180.Core.Editor.Classes.Fields;assembly=BCEdit180.Core"
                 mc:Ignorable="d"
                 Title="MainWindow" Width="1280" Height="720"
                 Style="{StaticResource CustomWindowStyleEx}"
@@ -267,8 +268,10 @@
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="110"/>
                                         <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="50"/>
+                                        <ColumnDefinition Width="5"/>
                                     </Grid.ColumnDefinitions>
-                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="0" FontWeight="Bold" Text="Minor Version"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" FontWeight="Bold" Text="Minor Version"/>
                                     <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="1" FontWeight="Bold" Text="Major Version"/>
                                     <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="2" FontWeight="Bold" Text="Const Pool Size"/>
                                     <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="3" FontWeight="Bold" Text="Access Flags"/>
@@ -278,17 +281,19 @@
                                     <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="7" FontWeight="Bold" Text="Methods"/>
                                     <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="8" FontWeight="Bold" Text="Fields"/>
 
-                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="0" Text="{Binding MinorVersion}"/>
-                                    <ComboBox  VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassVersionObjectDataProvider}}" SelectedItem="{Binding MajorVersion}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
-                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="2" Text="coming soon"/>
-                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="3" Text="{Binding AccessFlags, UpdateSourceTrigger=PropertyChanged}"   Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
-                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="4" Text="{Binding FullClassName, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
-                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="5" Text="{Binding SuperName, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
-                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="6" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
-                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="7" DataContext="{Binding Class.MethodList}" Text="{Binding Methods.Count}"/>
-                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="8" DataContext="{Binding Class.FieldList}" Text="{Binding Fields.Count}"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Text="{Binding MinorVersion}" Grid.ColumnSpan="2"/>
+                                    <ComboBox  VerticalAlignment="Center" Padding="4,2,4,2" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassVersionObjectDataProvider}}" SelectedItem="{Binding MajorVersion}" Background="{DynamicResource ABrush.Tone5.Background.Static}" Grid.ColumnSpan="2"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="2" Text="coming soon" Grid.ColumnSpan="2"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Grid.Column="1" Grid.Row="3" Text="{Binding AccessFlags, UpdateSourceTrigger=PropertyChanged}"   Background="{DynamicResource ABrush.Tone5.Background.Static}" Margin="0,0,5,0"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Grid.Column="1" Grid.Row="4" Text="{Binding FullClassName, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource ABrush.Tone5.Background.Static}" Grid.ColumnSpan="2"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Grid.Column="1" Grid.Row="5" Text="{Binding SuperName, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}" Grid.ColumnSpan="2"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Grid.Column="1" Grid.Row="6" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}" Grid.ColumnSpan="2"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="7" DataContext="{Binding Class.MethodList}" Text="{Binding Methods.Count}" Grid.ColumnSpan="2"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="8" DataContext="{Binding Class.FieldList}" Text="{Binding Fields.Count}" Grid.ColumnSpan="2"/>
 
-                                    <TabControl Grid.Row="9" Grid.ColumnSpan="2" 
+                                    <Button Command="{Binding EditAccessCommand, Mode=OneTime}" Grid.Column="2" Grid.Row="3" Margin="0,3,0,3" Content="Edit"/>
+
+                                    <TabControl Grid.Row="9" Grid.ColumnSpan="3" 
                                                 Background="{DynamicResource ABrush.Tone4.Background.Static}" 
                                                 BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" BorderThickness="1" Margin="5,5,5,5">
                                         <TabItem>
@@ -472,7 +477,7 @@
                                                  BorderThickness="0"
                                                  SelectionMode="Extended"
                                                  HorizontalContentAlignment="Stretch"
-                                                 Background="{DynamicResource ABrush.Tone5.Background.Static}"
+                                                 Background="{DynamicResource ABrush.Tone4.Background.Static}"
                                                  BorderBrush="{DynamicResource PanelBorderBrush}" 
                                                  SelectedItem="{Binding SelectedField}"
                                                  SelectedIndex="{Binding SelectedIndex}"
@@ -496,11 +501,11 @@
                                             <TextBox Foreground="{StaticResource FieldDescriptor}" Background="Transparent" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"           HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,52,0,0" BorderThickness="0"  FontWeight="Bold" FontStyle="Italic"  FontFamily="Consolas" Height="26"/>
                                             <TextBox Foreground="{StaticResource ConstEnum}" Background="Transparent" Text="{Binding Access, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource EnumToString}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,78,110,0" BorderThickness="0"  FontWeight="Bold" />
                                             <TextBox Foreground="{StaticResource ConstNumeric}" Background="Transparent" Text="{Binding ConstantValue, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,104,173,0" BorderThickness="0"  FontWeight="Bold" />
+                                            <Button Command="{x:Static fields:FieldViewModel.EditDescriptorCommand}" CommandParameter="{Binding}" Margin="0,27,3,0" Content="Edit Descriptor" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
+                                            <Button Command="{x:Static fields:FieldViewModel.EditAccessCommand}"     CommandParameter="{Binding}" Margin="0,79,3,0" Content="Edit Access"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
                                             <!--
-                                            <Button Command="{Binding EditFieldDescriptorCommand}" Margin="0,27,3,0" Content="Edit Descriptor" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
-                                            <Button Command="{Binding EditAccessCommand}"          Margin="0,79,3,0" Content="Edit Access"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
-                                            <Button Command="{Binding EditConstValueCommand}"      Margin="0,105,3,0" Content="Edit Value"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
-                                            <Button Command="{Binding SetConstValueNullCommand}"   Margin="0,105,107,0" Content="Clear"        Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="64"/>
+                                            <Button Command="{x:Static fields:FieldViewModel.EditConstValueCommand}"      Margin="0,105,3,0" Content="Edit Value"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
+                                            <Button Command="{x:Static fields:FieldViewModel.SetConstValueNullCommand}"   Margin="0,105,107,0" Content="Clear"        Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="64"/>
                                             -->
                                             <TabControl Margin="0,135,3,3" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
                                                 <TabItem Padding="12,4">
@@ -552,7 +557,7 @@
                                                  BorderThickness="0"
                                                  SelectionMode="Extended"
                                                  HorizontalContentAlignment="Stretch"
-                                                 Background="{DynamicResource ABrush.Tone5.Background.Static}"
+                                                 Background="{DynamicResource ABrush.Tone4.Background.Static}"
                                                  BorderBrush="{DynamicResource PanelBorderBrush}" 
                                                  SelectedItem="{Binding SelectedMethod}"
                                                  SelectedIndex="{Binding SelectedIndex}"
@@ -614,7 +619,7 @@
                                                             <Grid Margin="1">
                                                                 <Grid.RowDefinitions>
                                                                     <RowDefinition Height="36*"/>
-                                                                    <RowDefinition Height="10"/>
+                                                                    <RowDefinition Height="1"/>
                                                                     <RowDefinition Height="16*"/>
                                                                 </Grid.RowDefinitions>
                                                                 <Grid VerticalAlignment="Top" Height="22">
@@ -760,27 +765,27 @@
                                                                         <KeyBinding Key="Esc"/>
                                                                     </TextBox.InputBindings>
                                                                 </TextBox>
-                                                                <Button Grid.Row="0" VerticalAlignment="Bottom" Height="24" Margin="0,0,-3,0" BorderThickness="1 1 0 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Content="Search" HorizontalAlignment="Right" Width="65"/>
-                                                                <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone4.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone4.Border.Static}" BorderThickness="0 0 0 0">
-                                                                    <GroupBox DataContext="{Binding SelectedInstruction, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource SquaredGroupBox}" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="0,-6,0,0">
+                                                                <Button Grid.Row="0" VerticalAlignment="Bottom" Height="24" Margin="0,0,-2,0" BorderThickness="1,1,0,1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Content="Search" HorizontalAlignment="Right" Width="65"/>
+                                                                <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone4.Border.Static}" BorderThickness="0">
+                                                                    <GroupBox DataContext="{Binding SelectedInstruction, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource SquaredGroupBox}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="-2,0,-2,-2">
                                                                         <GroupBox.Header>
                                                                             <DockPanel HorizontalAlignment="Stretch">
                                                                                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="NoWrap" Text="Instruction Information" Padding="5"  FontWeight="Bold" Margin="0 -1 0 0"/>
-                                                                                <Border Margin="2,0" HorizontalAlignment="Left" Height="20" Width="1" Background="{DynamicResource ABrush.Tone7.Background.Static}"/>
+                                                                                <Border Margin="2,0" HorizontalAlignment="Left" Height="16" Width="1" Background="{DynamicResource ABrush.Tone7.Background.Static}"/>
                                                                                 <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Opcode, UpdateSourceTrigger=PropertyChanged, StringFormat={}Opcode: {0}}" 
                                                                                            Background="Transparent" TextWrapping="NoWrap" Padding="5" FontWeight="Bold" FontStyle="Italic"  Margin="0,2,0,3">
                                                                                     <TextBlock.InputBindings>
                                                                                         <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditOpcodeCommand}"/>
                                                                                     </TextBlock.InputBindings>
                                                                                 </TextBlock>
-                                                                                <Button IsEnabled="{Binding CanEditOpCode}" Command="{Binding EditOpcodeCommand}" Focusable="False" HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Height="22" Content="Change" Margin="0,4,0,5" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
+                                                                                <Button IsEnabled="{Binding CanEditOpCode}" Command="{Binding EditOpcodeCommand}" Focusable="False" HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Height="22" Content="Change" Margin="0,4,5,5" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
                                                                             </DockPanel>
                                                                         </GroupBox.Header>
                                                                         <ScrollViewer Background="{DynamicResource ABrush.Tone3.Background.Static}"
-                                                                              Margin="-4 -3 -4 -5" 
-                                                                              CanContentScroll="False"
-                                                                              ap:HorizontalScrolling.UseHorizontalScrolling="True"
-                                                                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                                                                      Margin="-4 -3 -4 -5" 
+                                                                                      CanContentScroll="False"
+                                                                                      ap:HorizontalScrolling.UseHorizontalScrolling="True"
+                                                                                      HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
                                                                             <ContentPresenter Content="{Binding}" Margin="4">
                                                                                 <ContentPresenter.Resources>
                                                                                     <DataTemplate DataType="{x:Type instructions:FieldInstructionViewModel}">
@@ -842,7 +847,7 @@
                                                                         </ScrollViewer>
                                                                     </GroupBox>
                                                                 </Border>
-                                                                <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" BorderThickness="0" Background="Transparent"/>
+                                                                <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" Margin="0,-2,0,-8" BorderThickness="0" Background="Transparent"/>
                                                             </Grid>
                                                         </TabItem>
                                                         <TabItem Header="Exceptions" DataContext="{Binding ExceptionEditor}">

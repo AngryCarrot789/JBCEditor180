@@ -1,4 +1,3 @@
-using BCEdit180.Core.Views.Dialogs;
 using JavaAsm.Instructions.Types;
 
 namespace BCEdit180.Core.Editor.Classes.Utils {

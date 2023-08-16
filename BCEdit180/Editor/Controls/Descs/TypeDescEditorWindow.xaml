@@ -7,10 +7,11 @@
               xmlns:v="clr-namespace:BCEdit180.Views"
               xmlns:attached="clr-namespace:BCEdit180.Themes.Attached"
               xmlns:asm="clr-namespace:JavaAsm;assembly=JavaAsm"
-              xmlns:descs="clr-namespace:BCEdit180.Core.Editor.Classes.Editors.Descs;assembly=BCEdit180.Core"
+              xmlns:descs="clr-namespace:BCEdit180.Core.Editor.Classes.Editors.Desc;assembly=BCEdit180.Core" xmlns:dragger="clr-namespace:BCEdit180.Controls.Dragger"
               mc:Ignorable="d"
-              Title="Edit type desc" Height="471" Width="385"
-              d:DataContext="{d:DesignInstance descs:TypeDescEditorViewModel}">
+              Title="Edit type desc" Height="435" Width="320"
+              d:DataContext="{d:DesignInstance descs:TypeDescEditorViewModel}"
+              Style="{DynamicResource CustomWindowStyleEx}">
     <Window.InputBindings>
         <KeyBinding Key="Enter" Command="{Binding ConfirmCommand, Mode=OneTime}" />
         <KeyBinding Key="Esc" Command="{Binding CancelCommand, Mode=OneTime}" />
@@ -25,10 +26,10 @@
                 <RowDefinition Height="24"/>
                 <RowDefinition Height="5"/>
             </Grid.RowDefinitions>
-            <GroupBox Background="{DynamicResource ABrush.Tone2.Background.Static}">
+            <GroupBox Background="{DynamicResource ABrush.Tone2.Background.Static}" Style="{StaticResource SquaredGroupBox}" IsEnabled="{Binding AllowClass, UpdateSourceTrigger=PropertyChanged}">
                 <GroupBox.Header>
                     <Grid>
-                        <RadioButton x:Name="ObjectRadioButton" Width="100" Content="Object Type" GroupName="TypeSelector" IsChecked="{Binding IsObject, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding AllowClass, UpdateSourceTrigger=PropertyChanged}"/>
+                        <RadioButton x:Name="ObjectRadioButton" Width="100" Content="Object Type" GroupName="TypeSelector" IsChecked="{Binding IsObject, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding ElementName=ObjectRadioButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}">
@@ -50,10 +51,10 @@
                     <TextBox IsReadOnly="True" Text="{Binding PreviewClassName, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Padding="3" Margin="85,96,0,0" Background="Transparent" BorderThickness="0" BorderBrush="Transparent"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Background="{DynamicResource ABrush.Tone2.Background.Static}">
+            <GroupBox Grid.Row="2" Background="{DynamicResource ABrush.Tone2.Background.Static}" Style="{StaticResource SquaredGroupBox}" IsEnabled="{Binding AllowPrimitive, UpdateSourceTrigger=PropertyChanged}">
                 <GroupBox.Header>
                     <Grid>
-                        <RadioButton x:Name="PrimitiveRadioButton" Width="100" Content="Primitive Type" GroupName="TypeSelector" IsChecked="{Binding IsPrimitive, UpdateSourceTrigger=PropertyChanged}" IsEnabled="{Binding AllowPrimitive, UpdateSourceTrigger=PropertyChanged}"/>
+                        <RadioButton x:Name="PrimitiveRadioButton" Width="100" Content="Primitive Type" GroupName="TypeSelector" IsChecked="{Binding IsPrimitive, UpdateSourceTrigger=PropertyChanged}"/>
                     </Grid>
                 </GroupBox.Header>
                 <Grid IsEnabled="{Binding ElementName=PrimitiveRadioButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}">
@@ -72,10 +73,8 @@
                     <RadioButton IsChecked="{Binding SelectedPrimitive, Converter={StaticResource EnumConverter}, ConverterParameter={x:Static asm:PrimitiveType.Void}}" Content="Void" VerticalAlignment="Top" Height="20" Margin="0,80,0,0" Grid.Column="1"/>
                 </Grid>
             </GroupBox>
-            <Label Padding="3" Width="80" VerticalAlignment="Top" HorizontalAlignment="Left" Height="24" VerticalContentAlignment="Center" Grid.Row="4">
-                <TextBlock Text="Array Depth"/>
-            </Label>
-            <TextBox Text="{Binding ArrayDepth, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Top" Padding="3" Margin="80,0,0,0" BorderBrush="{DynamicResource AREghZyBrush.Primary.2.Border.Static}" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}" Grid.Row="4"/>
+            <TextBlock Text="Array Depth" Padding="3,0" Width="80" VerticalAlignment="Center" HorizontalAlignment="Left" Grid.Row="4"/>
+            <dragger:NumberDragger Value="{Binding ArrayDepth, UpdateSourceTrigger=PropertyChanged}" Minimum="0" Maximum="65535" VerticalAlignment="Stretch" Padding="1" Margin="80,0,0,0" Grid.Row="4" Style="{StaticResource AbletonNumberDraggerStyle}" BorderBrush="{DynamicResource ABrush.Tone6.Border.Static}"/>
         </Grid>
         <Border DockPanel.Dock="Bottom" VerticalAlignment="Bottom" x:Name="ButtonBarBorder" Background="{DynamicResource ABrush.Tone4.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" BorderThickness="0,1,0,0">
             <Grid Height="43">

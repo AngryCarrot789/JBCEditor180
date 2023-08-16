@@ -86,6 +86,16 @@
     <Compile Include="Converters\TypeDescriptorToReadableConverter.cs" />
     <Compile Include="Converters\TypeDescriptorToStringConverter.cs" />
     <Compile Include="Converters\TypeEqualityToTrueConverter.cs" />
+    <Compile Include="Editor\Controls\Access\AccessEditorService.cs" />
+    <Compile Include="Editor\Controls\Access\ClassAccessEditorWindow.xaml.cs">
+      <DependentUpon>ClassAccessEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\Controls\Access\FieldAccessEditorWindow.xaml.cs">
+      <DependentUpon>FieldAccessEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\Controls\Access\MethodAccessEditorWindow.xaml.cs">
+      <DependentUpon>MethodAccessEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Editor\Controls\Annotations\AnnotationEditorControl.cs" />
     <Compile Include="Editor\Controls\Annotations\AnnotationEntryEditorControl.xaml.cs">
       <DependentUpon>AnnotationEntryEditorControl.xaml</DependentUpon>
@@ -102,6 +112,13 @@
     <Compile Include="Editor\Controls\Bytecode\Viewers\HandleControl.cs" />
     <Compile Include="Editor\Controls\Bytecode\Viewers\MethodDescriptorControl.cs" />
     <Compile Include="Editor\Controls\Bytecode\Viewers\TypeDescriptorControl.cs" />
+    <Compile Include="Editor\Controls\Descs\DescEditorService.cs" />
+    <Compile Include="Editor\Controls\Descs\MethodDescEditorWindow.xaml.cs">
+      <DependentUpon>MethodDescEditorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Editor\Controls\Descs\TypeDescEditorWindow.xaml.cs">
+      <DependentUpon>TypeDescEditorWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Editor\Controls\DoubleClickEditBox.xaml.cs">
       <DependentUpon>DoubleClickEditBox.xaml</DependentUpon>
     </Compile>
@@ -251,6 +268,18 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
+    <Page Include="Editor\Controls\Access\ClassAccessEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor\Controls\Access\FieldAccessEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor\Controls\Access\MethodAccessEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Editor\Controls\Annotations\AnnotationEntryEditorControl.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -274,6 +303,14 @@
     <Page Include="Editor\Controls\Bytecode\Viewers\ViewerStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Editor\Controls\Descs\MethodDescEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Editor\Controls\Descs\TypeDescEditorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Editor\Controls\DoubleClickEditBox.xaml">
       <Generator>MSBuild:Compile</Generator>

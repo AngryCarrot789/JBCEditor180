@@ -1,5 +1,3 @@
-using System.IO;
-using BCEdit180.Core.Utils;
 using JavaAsm;
 using JavaAsm.CustomAttributes;
 

@@ -1,3 +1,4 @@
+using System;
 using BCEdit180.Core.Utils;
 using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;
@@ -80,6 +81,24 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
             this.ArrayDepth = 0;
             this.AllowPrimitive = true;
             this.AllowClass = true;
+        }
+
+        public void SetTypeDescriptor(TypeDescriptor desc) {
+            this.ArrayDepth = (ushort) desc.ArrayDepth;
+            if (this.AllowClass && desc.ClassName != null) {
+                string strippedArray = StripArrayDepthPart(desc.ClassName.Name);
+                this.PreviewInternalName = this.GetInternalName(strippedArray);
+                this.PreviewClassName = this.GetClassName(strippedArray);
+                this.PreviewDescriptor = this.ArrayPartString + this.GetDescriptor(strippedArray);
+                this.inputText = desc.ClassName.ToString();
+                this.RaisePropertyChanged(nameof(this.InputText));
+                this.IsObject = true;
+            }
+
+            if (this.AllowPrimitive && desc.PrimitiveType != null) {
+                this.SelectedPrimitive = desc.PrimitiveType.Value;
+                this.IsPrimitive = true;
+            }
         }
 
         public void UpdateClassName(bool calculateArrayDepth) {

@@ -67,6 +67,18 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
 
         public FieldListViewModel FieldList { get; }
 
+        public static RelayCommand<FieldViewModel> EditDescriptorCommand { get; } = new RelayCommand<FieldViewModel>(async (x) => {
+            TypeDescriptor desc = await IoC.TypeDescEditors.EditTypeDesc(true, true, 0, x.FieldDescriptor);
+            if (desc != null)
+                x.FieldDescriptor = desc;
+        });
+
+        public static RelayCommand<FieldViewModel> EditAccessCommand { get; } = new RelayCommand<FieldViewModel>(async (x) => {
+            FieldAccessModifiers? result = await IoC.AccessEditors.EditFieldAccessAsync(x.Access);
+            if (result.HasValue)
+                x.Access = result.Value;
+        });
+
         public FieldViewModel(FieldListViewModel list, FieldNode node) {
             this.FieldList = list;
             this.Node = node;

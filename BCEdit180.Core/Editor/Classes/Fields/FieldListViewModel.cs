@@ -1,5 +1,4 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
 using JavaAsm;
 
 namespace BCEdit180.Core.Editor.Classes.Fields {

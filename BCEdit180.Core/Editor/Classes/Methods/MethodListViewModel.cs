@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using System.Windows.Input;
+using System.Threading.Tasks;
 using JavaAsm;
 
 namespace BCEdit180.Core.Editor.Classes.Methods {
@@ -21,9 +21,24 @@ namespace BCEdit180.Core.Editor.Classes.Methods {
 
         public ClassViewModel Class { get; }
 
+        public RelayCommand<MethodViewModel> EditMethodAccessCommand { get; }
+
+        public RelayCommand<MethodViewModel> EditMethodDescriptorCommand { get; }
+
         public MethodListViewModel(ClassViewModel klass) {
             this.Class = klass;
             this.Methods = new ObservableCollection<MethodViewModel>();
+            this.EditMethodAccessCommand = new RelayCommand<MethodViewModel>(async (x) => {
+                MethodAccessModifiers? result = await IoC.AccessEditors.EditMethodAccessAsync(x.Access);
+                if (result.HasValue)
+                    x.Access = result.Value;
+            });
+
+            this.EditMethodDescriptorCommand = new RelayCommand<MethodViewModel>(async (x) => {
+                MethodDescriptor result = await IoC.TypeDescEditors.EditMethodDesc(x.MethodDescriptor);
+                if (result != null)
+                    x.MethodDescriptor = result;
+            });
         }
 
         public void Load(ClassNode node) {

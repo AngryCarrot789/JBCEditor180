@@ -1,13 +1,10 @@
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.Linq;
-using System.Windows.Input;
 using BCEdit180.Core.Editor.Classes.Descriptors;
 using BCEdit180.Core.Editor.Classes.Utils;
 using BCEdit180.Core.Utils;
-using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;
 using JavaAsm.Instructions;
 using JavaAsm.Instructions.Types;
