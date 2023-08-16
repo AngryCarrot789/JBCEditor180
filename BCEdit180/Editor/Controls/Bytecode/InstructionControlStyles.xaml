@@ -33,11 +33,7 @@
                         <TextBlock Text="{Binding FieldOwner, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource ClassName}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The class that owns this field"/>
                         <TextBlock Text="." Padding="0" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding FieldName, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource FieldName}" Padding="0 0 5 0" VerticalAlignment="Center" ToolTip="The name of the field"/>
-                        <TextBlock Text="{Binding FieldDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={converters:TypeDescriptorToStringConverter}}" Foreground="{StaticResource FieldDescriptor}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The descriptor of the type that this field holds">
-                            <TextBlock.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick"  Command="{Binding EditFieldDescriptorCommand}"/>
-                            </TextBlock.InputBindings>
-                        </TextBlock>
+                        <TextBlock Text="{Binding FieldDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={converters:TypeDescriptorToStringConverter}}" Foreground="{StaticResource FieldDescriptor}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The descriptor of the type that this field holds"/>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
@@ -57,11 +53,7 @@
                         <TextBlock Text="{Binding MethodOwner, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource ClassName}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The class that owns the method"/>
                         <TextBlock Text="." Padding="0" VerticalAlignment="Center"/>
                         <TextBlock Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MethodName}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The name of the method"/>
-                        <TextBlock Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MethodDescriptor}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The method's descriptor (parameters and return type)">
-                            <TextBlock.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditMethodDescriptorCommand}"/>
-                            </TextBlock.InputBindings>
-                        </TextBlock>
+                        <TextBlock Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MethodDescriptor}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The method's descriptor (parameters and return type)"/>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
@@ -112,18 +104,10 @@
                                 <MouseBinding MouseAction="LeftDoubleClick"  Command="{Binding EditOpcodeCommand}"/>
                             </TextBlock.InputBindings>
                         </TextBlock>
-                        <TextBlock Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MethodDescriptor}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The descriptor of a method that generates our (usually) functional interface" ToolTipService.ShowDuration="60000">
-                            <TextBlock.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick"  Command="{Binding EditDescriptorCommand}"/>
-                            </TextBlock.InputBindings>
-                        </TextBlock>
+                        <TextBlock Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MethodDescriptor}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The descriptor of a method that generates our (usually) functional interface" ToolTipService.ShowDuration="60000"/>
                         <TextBlock Text=" -> " Padding="0" VerticalAlignment="Center" Foreground="{DynamicResource ABrush.Glyph.Disabled}"/>
                         <TextBlock Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" Foreground="{StaticResource MethodName}" Padding="0 0 0 0" VerticalAlignment="Center" ToolTip="The name of the (usually function interface) method that is invoked (the method will belong to the descriptor's return type)" ToolTipService.ShowDuration="60000"/>
-                        <TextBlock Text="{Binding BootstrapReferenceType, UpdateSourceTrigger=PropertyChanged, StringFormat={} ({0})}"  Foreground="{StaticResource ConstEnum}" Padding="0" VerticalAlignment="Center" ToolTip="The way the call site (target lambda/method ref) is called. This is usually a static invocation for simple lambdas" ToolTipService.ShowDuration="60000">
-                            <TextBlock.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick"  Command="{Binding EditBootstrapReferenceTypeCommand}"/>
-                            </TextBlock.InputBindings>
-                        </TextBlock>
+                        <TextBlock Text="{Binding BootstrapReferenceType, UpdateSourceTrigger=PropertyChanged, StringFormat={} ({0})}"  Foreground="{StaticResource ConstEnum}" Padding="0" VerticalAlignment="Center" ToolTip="The way the call site (target lambda/method ref) is called. This is usually a static invocation for simple lambdas" ToolTipService.ShowDuration="60000"/>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>
@@ -185,11 +169,7 @@
                                 <MouseBinding MouseAction="LeftDoubleClick"  Command="{Binding EditOpcodeCommand}"/>
                             </TextBlock.InputBindings>
                         </TextBlock>
-                        <TextBlock Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ConstPreviewConverter}}" Foreground="{StaticResource Keyword}" Padding="0 0 0 0" VerticalAlignment="Center">
-                            <TextBlock.InputBindings>
-                                <MouseBinding MouseAction="LeftDoubleClick"  Command="{Binding EditValueCommand}"/>
-                            </TextBlock.InputBindings>
-                        </TextBlock>
+                        <TextBlock Text="{Binding Value, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource ConstPreviewConverter}}" Foreground="{StaticResource Keyword}" Padding="0 0 0 0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </ControlTemplate>
             </Setter.Value>

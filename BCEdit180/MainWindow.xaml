@@ -187,7 +187,7 @@
                         <!-- Visibility="{Binding Converter={x:Static c:NullToVisibilityConverter.ToCollapsedOrVisible}}" -->
                         <TabControl DataContext="{Binding ActiveClass, Mode=OneWay}" 
                                     Background="{DynamicResource ABrush.Tone3.Background.Static}" 
-                                    BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,1,0,1"
+                                    BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1,1,0,1"
                                     x:Name="ActiveClassTabControl" TabStripPlacement="Bottom">
                             <TabControl.Style>
                                 <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource {x:Type TabControl}}">
@@ -285,12 +285,12 @@
                                     <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="4" Text="{Binding FullClassName, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
                                     <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="5" Text="{Binding SuperName, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
                                     <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="6" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
-                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="7" Text="{Binding}"/>
-                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="8" Text="{Binding}"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="7" DataContext="{Binding Class.MethodList}" Text="{Binding Methods.Count}"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="8" DataContext="{Binding Class.FieldList}" Text="{Binding Fields.Count}"/>
 
                                     <TabControl Grid.Row="9" Grid.ColumnSpan="2" 
                                                 Background="{DynamicResource ABrush.Tone4.Background.Static}" 
-                                                BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1,1,0,0" Margin="0,0,0,0">
+                                                BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" BorderThickness="1" Margin="5,5,5,5">
                                         <TabItem>
                                             <TabItem.Header>
                                                 <StackPanel Orientation="Horizontal">
@@ -310,7 +310,7 @@
                                                      acs:AdvancedContextMenu.ContextGenerator="{x:Static e:InterfaceContextGenerator.Instance}">
                                                 <ListBox.ItemTemplate>
                                                     <DataTemplate>
-                                                        <TextBlock Text="{Binding FullName}" Padding="5,4" HorizontalAlignment="Stretch"/>
+                                                        <TextBlock Text="{Binding FullName}" Padding="5,2" HorizontalAlignment="Stretch"/>
                                                     </DataTemplate>
                                                 </ListBox.ItemTemplate>
                                                 <ListBox.ItemContainerStyle>
@@ -379,7 +379,7 @@
                                                     </GroupBox.Header>
                                                     <ListBox ItemsSource="{Binding InnerClasses}" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0"
                                                              ap:MultiSelectorHelper.SelectedItems="{Binding SelectedInnerClasses, Mode=OneTime}"
-                                                             SelectionMode="Extended">
+                                                             SelectionMode="Extended" Margin="-5,0,-5,-5">
                                                         <ListBox.ItemContainerStyle>
                                                             <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
                                                                 <Setter Property="BorderThickness" Value="0"/>
@@ -454,14 +454,14 @@
                                 </TabItem.Header>
                                 <Grid>
                                     <Grid.ColumnDefinitions>
-                                        <ColumnDefinition Width="200*"/>
-                                        <ColumnDefinition Width="7"/>
-                                        <ColumnDefinition Width="600*"/>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1"/>
+                                        <ColumnDefinition Width="6*"/>
                                     </Grid.ColumnDefinitions>
-                                    <DockPanel Margin="0,0,5,0" Grid.ColumnSpan="2">
+                                    <DockPanel Grid.ColumnSpan="2">
                                         <DockPanel DockPanel.Dock="Top" Margin="0,-1,0,0">
                                             <Button DockPanel.Dock="Right" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource PanelBorderBrush}" Content="Search" HorizontalAlignment="Right" Width="58" Height="24" VerticalAlignment="Bottom" Margin="0" Background="{DynamicResource ABrush.Tone6.Background.Static}"/>
-                                            <TextBox Style="{DynamicResource HintedTextBox}" Tag="Search for a method" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" VerticalAlignment="Bottom" Height="24" BorderBrush="{DynamicResource PanelBorderBrush}" Background="{DynamicResource ABrush.Tone4.Background.Static}">
+                                            <TextBox Style="{DynamicResource HintedTextBox}" Tag="Search for a method" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" Margin="-1,0,0,0" VerticalAlignment="Bottom" Height="24" BorderBrush="{DynamicResource PanelBorderBrush}" Background="{DynamicResource ABrush.Tone4.Background.Static}">
                                                 <TextBox.InputBindings>
                                                     <KeyBinding Key="Enter"/>
                                                     <KeyBinding Key="Esc"/>
@@ -469,7 +469,7 @@
                                             </TextBox>
                                         </DockPanel>
                                         <ListBox ItemsSource="{Binding Fields}" x:Name="FieldList"
-                                                 BorderThickness="1,0"
+                                                 BorderThickness="0"
                                                  SelectionMode="Extended"
                                                  HorizontalContentAlignment="Stretch"
                                                  Background="{DynamicResource ABrush.Tone5.Background.Static}"
@@ -502,7 +502,7 @@
                                             <Button Command="{Binding EditConstValueCommand}"      Margin="0,105,3,0" Content="Edit Value"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
                                             <Button Command="{Binding SetConstValueNullCommand}"   Margin="0,105,107,0" Content="Clear"        Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="64"/>
                                             -->
-                                            <TabControl Margin="3,135,5,5" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
+                                            <TabControl Margin="0,135,3,3" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
                                                 <TabItem Padding="12,4">
                                                     <TabItem.Header>
                                                         <StackPanel Orientation="Horizontal" ToolTip="Annotations that are kept during runtime">
@@ -524,7 +524,8 @@
                                             </TabControl>
                                         </Grid>
                                     </Border>
-                                    <GridSplitter Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" BorderThickness="0 0 0 0"/>
+                                    <Border Background="{DynamicResource PanelBorderBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1"/>
+                                    <GridSplitter Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" BorderThickness="0 0 0 0" Margin="-5,0"/>
                                 </Grid>
                             </TabItem>
                             <TabItem Padding="12,3" DataContext="{Binding MethodList, Mode=OneTime}">
@@ -539,8 +540,8 @@
                                     </Grid.ColumnDefinitions>
                                     <DockPanel>
                                         <DockPanel DockPanel.Dock="Top" Margin="0,-1,0,0">
-                                            <Button DockPanel.Dock="Right" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource PanelBorderBrush}" Content="Search" HorizontalAlignment="Right" Width="58" Height="24" VerticalAlignment="Bottom" Margin="0" Background="{DynamicResource ABrush.Tone6.Background.Static}"/>
-                                            <TextBox Style="{DynamicResource HintedTextBox}" Tag="Search for a method" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" VerticalAlignment="Bottom" Height="24" BorderBrush="{DynamicResource PanelBorderBrush}" Background="{DynamicResource ABrush.Tone4.Background.Static}">
+                                            <Button DockPanel.Dock="Right" BorderThickness="0,1" BorderBrush="{DynamicResource PanelBorderBrush}" Content="Search" HorizontalAlignment="Right" Width="58" Height="24" VerticalAlignment="Bottom" Margin="0" Background="{DynamicResource ABrush.Tone6.Background.Static}"/>
+                                            <TextBox Style="{DynamicResource HintedTextBox}" Tag="Search for a method" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" Margin="-1,0,0,0" VerticalAlignment="Bottom" Height="24" BorderBrush="{DynamicResource PanelBorderBrush}" Background="{DynamicResource ABrush.Tone4.Background.Static}">
                                                 <TextBox.InputBindings>
                                                     <KeyBinding Key="Enter"/>
                                                     <KeyBinding Key="Esc"/>
@@ -548,7 +549,7 @@
                                             </TextBox>
                                         </DockPanel>
                                         <ListBox ItemsSource="{Binding Methods}" x:Name="MethodList"
-                                                 BorderThickness="1,0"
+                                                 BorderThickness="0"
                                                  SelectionMode="Extended"
                                                  HorizontalContentAlignment="Stretch"
                                                  Background="{DynamicResource ABrush.Tone5.Background.Static}"
@@ -584,7 +585,7 @@
                                                     <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding MaxStack, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,104,0,0" BorderThickness="0"  FontWeight="Bold" Height="26"/>
                                                     <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding MaxLocals, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,130,0,0" BorderThickness="0"  FontWeight="Bold" Height="26"/>
                                                     <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding CodeEditor.ByteCodeEditor.Instructions.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" IsReadOnly="True"   HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,156,0,0" BorderThickness="0"  FontWeight="Bold" />
-                                                    <TabControl Margin="3,135,5,5" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
+                                                    <TabControl Margin="3,135,3,3" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
                                                         <TabItem Padding="12,4">
                                                             <TabItem.Header>
                                                                 <StackPanel Orientation="Horizontal" ToolTip="Annotations that are kept during runtime">
@@ -606,7 +607,7 @@
                                                     </TabControl>
                                                 </Grid>
                                             </TabItem>
-                                            <TabItem Header="Bytecode Editor" Padding="12,4">
+                                            <TabItem Header="Bytecode Editor" Padding="12,4" Style="{StaticResource NoLeftBorder}">
                                                 <Grid DataContext="{Binding CodeEditor}">
                                                     <TabControl BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="1">
                                                         <TabItem Header="Bytecode Editor" DataContext="{Binding ByteCodeEditor}">
@@ -846,9 +847,9 @@
                                                         </TabItem>
                                                         <TabItem Header="Exceptions" DataContext="{Binding ExceptionEditor}">
                                                             <ListView ItemsSource="{Binding TryCatchBlocks}" 
-                                                      Background="{DynamicResource ABrush.Tone3.Background.Static}"
-                                                      BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
-                                                      ap:HorizontalScrolling.UseHorizontalScrolling="True">
+                                                                      Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                                      BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
+                                                                      ap:HorizontalScrolling.UseHorizontalScrolling="True">
                                                                 <ListView.View>
                                                                     <GridView>
                                                                         <GridView.Columns>
@@ -859,8 +860,8 @@
                                                                                 <GridViewColumn.CellTemplate>
                                                                                     <DataTemplate>
                                                                                         <Grid>
-                                                                                            <controls1:DoubleClickEditBox Visibility="{Binding IsFinallyBlock, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource VisibilityConverter}, ConverterParameter=Invert}" d:DataContext="{d:DesignInstance exceptionTable:TryCatchBlockViewModel}" Text="{Binding HandlerType, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas" Foreground="{DynamicResource ClassName}"/>
-                                                                                            <TextBlock Visibility="{Binding IsFinallyBlock, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource VisibilityConverter}}" d:DataContext="{d:DesignInstance exceptionTable:TryCatchBlockViewModel}" Text="[Finally Block]" Foreground="{DynamicResource ConstNumeric}" FontFamily="Consolas"/>
+                                                                                            <controls1:DoubleClickEditBox Visibility="{Binding IsFinallyBlock, UpdateSourceTrigger=PropertyChanged, Converter={x:Static c:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}, ConverterParameter=Invert}" d:DataContext="{d:DesignInstance exceptionTable:TryCatchBlockViewModel}" Text="{Binding HandlerType, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas" Foreground="{DynamicResource ClassName}"/>
+                                                                                            <TextBlock Visibility="{Binding IsFinallyBlock, UpdateSourceTrigger=PropertyChanged, Converter={x:Static c:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}}" d:DataContext="{d:DesignInstance exceptionTable:TryCatchBlockViewModel}" Text="[Finally Block]" Foreground="{DynamicResource ConstNumeric}" FontFamily="Consolas"/>
                                                                                         </Grid>
                                                                                     </DataTemplate>
                                                                                 </GridViewColumn.CellTemplate>
@@ -876,9 +877,9 @@
                                                                 <Button Command="{Binding RemoveSelectedEntryCommand}" Content="Remove Selected Entry" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="102,0,0,0"/>
                                                                 <Button Command="{Binding ClearLVTCommand}" Content="Clear LVT" VerticalAlignment="Top" HorizontalAlignment="Right" Width="85" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
                                                                 <ListView ItemsSource="{Binding LocalVariables}" SelectedItem="{Binding SelectedEntry, UpdateSourceTrigger=PropertyChanged}"
-                                                                  Background="{DynamicResource ABrush.Tone3.Background.Static}"
-                                                                  BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
-                                                                  ap:HorizontalScrolling.UseHorizontalScrolling="True" Margin="0,26,0,0">
+                                                                          Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                                          BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
+                                                                          ap:HorizontalScrolling.UseHorizontalScrolling="True" Margin="0,26,0,0">
                                                                     <ListView.View>
                                                                         <GridView>
                                                                             <GridView.Columns>
@@ -945,7 +946,8 @@
                                             </TabItem>
                                         </TabControl>
                                     </Border>
-                                    <GridSplitter Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" BorderBrush="{DynamicResource ABrush.Tone7.Border.Static}" Grid.Column="1"/>
+                                    <Border Background="{DynamicResource PanelBorderBrush}" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1"/>
+                                    <GridSplitter Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" BorderBrush="{DynamicResource ABrush.Tone7.Border.Static}" Grid.Column="1" Margin="-5,0"/>
                                 </Grid>
                             </TabItem>
                         </TabControl>

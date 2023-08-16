@@ -11,28 +11,16 @@
                     xmlns:fields="clr-namespace:BCEdit180.Core.Editor.Classes.Fields;assembly=BCEdit180.Core"
                     xmlns:controls="clr-namespace:BCEdit180.Editor.Controls"
                     mc:Ignorable="d">
-    <converters:BoolToVisibilityConverter x:Key="VisibilityConverter" TrueValue="Visible" FalseValue="Collapsed"/>
     <Style TargetType="{x:Type controls:MethodInfoControl}">
         <Setter Property="Background" Value="Transparent"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <StackPanel d:DataContext="{d:DesignInstance methods:MethodViewModel}">
-                        <TextBlock Padding="2,1" Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" FontFamily="Consolas"/>
-                        <Label Visibility="{Binding IsDeprecated, Converter={StaticResource VisibilityConverter}}" HorizontalContentAlignment="Center" Content="Deprecated" FontStyle="Italic" Background="#7FDE0707" Padding="0 2" Foreground="#FFE0E0E0"/>
-                    </StackPanel>
-                    <ControlTemplate.Triggers>
-                        <DataTrigger Binding="{Binding IsCreatedRuntime, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                            <Setter Property="Background">
-                                <Setter.Value>
-                                    <SolidColorBrush Color="#CC16B92D"/>
-                                </Setter.Value>
-                            </Setter>
-                        </DataTrigger>
-                        <DataTrigger Binding="{Binding IsCreatedRuntime, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                            <Setter Property="Background" Value="Transparent"/>
-                        </DataTrigger>
-                    </ControlTemplate.Triggers>
+                    <DockPanel d:DataContext="{d:DesignInstance methods:MethodViewModel}">
+                        <TextBlock DockPanel.Dock="Left" Text="*" Visibility="{Binding IsCreatedRuntime, Converter={x:Static converters:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}}"/>
+                        <Label  DockPanel.Dock="Right" Visibility="{Binding IsDeprecated, Converter={x:Static converters:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}}" HorizontalContentAlignment="Center" Content="Deprecated" FontStyle="Italic" Background="#7FDE0707" Padding="0 2" Foreground="#FFE0E0E0"/>
+                        <TextBlock Padding="2,1" Text="{Binding MethodName}" FontSize="14" FontFamily="Consolas"/>
+                    </DockPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -42,25 +30,14 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
-                    <StackPanel d:DataContext="{d:DesignInstance fields:FieldViewModel}">
-                        <TextBlock Padding="2,1" Text="{Binding FieldName, UpdateSourceTrigger=PropertyChanged}" FontSize="14" FontFamily="Consolas"/>
-                        <Label Visibility="{Binding IsDeprecated, Converter={StaticResource VisibilityConverter}}" HorizontalContentAlignment="Center" Content="Deprecated" FontStyle="Italic" Background="#7FDE0707" Padding="0 2" Foreground="#FFE0E0E0"/>
-                    </StackPanel>
+                    <DockPanel d:DataContext="{d:DesignInstance fields:FieldViewModel}">
+                        <TextBlock DockPanel.Dock="Left" Text="*" Visibility="{Binding IsCreatedRuntime, Converter={x:Static converters:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}}"/>
+                        <Label  DockPanel.Dock="Right" Visibility="{Binding IsDeprecated, Converter={x:Static converters:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}}" HorizontalContentAlignment="Center" Content="Deprecated" FontStyle="Italic" Background="#7FDE0707" Padding="0 2" Foreground="#FFE0E0E0"/>
+                        <TextBlock Padding="2,1" Text="{Binding FieldName}" FontSize="14" FontFamily="Consolas"/>
+                    </DockPanel>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-        <Style.Triggers>
-            <DataTrigger Binding="{Binding IsCreatedRuntime, UpdateSourceTrigger=PropertyChanged}" Value="True">
-                <Setter Property="Background">
-                    <Setter.Value>
-                        <SolidColorBrush Color="#CC16B92D"/>
-                    </Setter.Value>
-                </Setter>
-            </DataTrigger>
-            <DataTrigger Binding="{Binding IsCreatedRuntime, UpdateSourceTrigger=PropertyChanged}" Value="False">
-                <Setter Property="Background" Value="Transparent"/>
-            </DataTrigger>
-        </Style.Triggers>
     </Style>
     <Style TargetType="{x:Type an:AnnotationItemControl}">
         <Setter Property="Background" Value="Transparent"/>
@@ -98,7 +75,7 @@
                             <ColumnDefinition Width="1"/>
                             <ColumnDefinition Width="75*"/>
                         </Grid.ColumnDefinitions>
-                        <ListBox x:Name="AnnotationListBox" ItemsSource="{Binding Annotations}" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderThickness="0">
+                        <ListBox x:Name="AnnotationListBox" ItemsSource="{Binding Annotations, Mode=OneTime}" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderThickness="0">
                             <ListBox.ItemTemplate>
                                 <DataTemplate>
                                     <an:AnnotationItemControl DataContext="{Binding}"/>
