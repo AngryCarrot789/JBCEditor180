@@ -2,9 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Linq;
 using BCEdit180.Core.Editor.Classes;
+using BCEdit180.Core.Editor.FileSystem;
 using BCEdit180.Core.Editor.FileSystem.Physical;
 using JavaAsm;
+using JavaAsm.CustomAttributes.Annotation;
 using JavaAsm.Instructions;
 using JavaAsm.Instructions.Types;
 using JavaAsm.IO;
@@ -46,23 +49,48 @@ namespace BCEdit180.Core.Editor {
                 using (BufferedStream stream = new BufferedStream(File.OpenRead(path))) {
                     node = ClassFile.ParseClass(stream);
                 }
-            }
-            else {
-                node = CreateBlankClass();
-                path = null;
-            }
 
-            ClassViewModel klass = new ClassViewModel() {
-                ClassManager = this
-            };
+                ClassViewModel klass = new ClassViewModel() {
+                    ClassManager = this
+                };
 
-            klass.Load(node);
+                klass.SetFilePath(path);
+                klass.Load(node);
 
-            this.classes.Add(klass);
-            this.ActiveClass = klass;
-
-            if (path != null) {
+                this.classes.Add(klass);
+                this.ActiveClass = klass;
                 this.MainView.Explorer.Root.AddFile(new IOFileItemViewModel(path));
+            }
+
+            path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Desktop), "HeightLayerFactory.class");
+            if (File.Exists(path)) {
+                using (BufferedStream stream = new BufferedStream(File.OpenRead(path))) {
+                    node = ClassFile.ParseClass(stream);
+                }
+
+                ClassViewModel klass = new ClassViewModel() {
+                    ClassManager = this
+                };
+
+                klass.SetFilePath(path);
+                klass.Load(node);
+
+                this.classes.Add(klass);
+                this.ActiveClass = klass;
+                this.MainView.Explorer.Root.AddFile(new IOFileItemViewModel(path));
+            }
+
+            {
+                node = CreateBlankClass();
+                ClassViewModel klass = new ClassViewModel() {
+                    ClassManager = this
+                };
+
+                klass.Load(node);
+                this.classes.Add(klass);
+                if (this.classes.Count == 1) {
+                    this.ActiveClass = klass;
+                }
             }
         }
 
@@ -122,6 +150,8 @@ namespace BCEdit180.Core.Editor {
                 MaxLocals = 1,
                 Instructions = new InstructionList() {
                     new SimpleInstruction(Opcode.RETURN)
+                }, VisibleAnnotations = {
+                    new AnnotationNode()
                 }
             });
 

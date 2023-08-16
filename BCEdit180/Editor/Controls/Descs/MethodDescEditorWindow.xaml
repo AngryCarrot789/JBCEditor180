@@ -6,6 +6,8 @@
               xmlns:v="clr-namespace:BCEdit180.Views"
               xmlns:attached="clr-namespace:BCEdit180.Themes.Attached"
               xmlns:desc="clr-namespace:BCEdit180.Core.Editor.Classes.Editors.Desc;assembly=BCEdit180.Core"
+              xmlns:converters="clr-namespace:BCEdit180.Converters"
+              xmlns:ap="clr-namespace:BCEdit180.AttachedProperties"
               mc:Ignorable="d"
               Title="Edit type desc" Height="435" Width="300"
               d:DataContext="{d:DesignInstance desc:MethodDescEditorViewModel}"
@@ -21,25 +23,29 @@
                 <Label Padding="3" Width="80" HorizontalAlignment="Left" VerticalContentAlignment="Center">
                     <TextBlock Text="Return Type"/>
                 </Label>
-                <TextBox Text="{Binding ReturnType, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" VerticalContentAlignment="Center" Padding="3" Margin="80,0,50,0" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}"/>
+                <TextBox Text="{Binding ReturnType, UpdateSourceTrigger=PropertyChanged, Converter={x:Static converters:TypeDescriptorToStringConverter.Instance}}" VerticalContentAlignment="Center" Padding="3" Margin="80,0,50,0" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}"/>
                 <Button Focusable="False" Command="{Binding EditReturnTypeCommand}" Content="Edit" Padding="3" BorderThickness="0 1 1 1" HorizontalAlignment="Right" Width="50"/>
             </Grid>
             <GroupBox Margin="0,76,0,0" BorderThickness="1">
                 <GroupBox.Header>
                     <StackPanel Orientation="Horizontal">
                         <TextBlock Text="Parameters" VerticalAlignment="Center" Padding="2" Margin="0 0 5 0"/>
-                        <Button Command="{Binding AddNewParameterCommand}" ToolTip="Show a dialog to create a new parameter" Margin="0 0 5 0" Focusable="False" Width="21" Height="21" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone6.Border.Static}">
+                        <Button Command="{Binding AddNewParameterCommand, Mode=OneTime}" ToolTip="Show a dialog to create a new parameter" Margin="0 0 5 0" Focusable="False" Width="21" Height="21" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone6.Border.Static}">
                             <TextBlock Text="+" Margin="0 -4 0 0" FontSize="16"/>
                         </Button>
-                        <Button Command="{Binding RemoveSelectedCommand}" ToolTip="Remove the currently selected parameter" Focusable="False" Width="21" Height="21" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone6.Border.Static}">
+                        <Button Command="{Binding RemoveSelectedCommand, Mode=OneTime}" ToolTip="Remove the currently selected parameter" Focusable="False" Width="21" Height="21" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone6.Border.Static}">
                             <TextBlock Text="-" Margin="0 -4 0 0" FontSize="16"/>
                         </Button>
                     </StackPanel>
                 </GroupBox.Header>
-                <ListBox ItemsSource="{Binding Parameters}" SelectedItem="{Binding SelectedParameter, UpdateSourceTrigger=PropertyChanged}" HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="True" Margin="-4,-3,-4,-5" Background="{DynamicResource AREghZyBrush.Deep.2.Background.Static}" BorderThickness="0">
+                <ListBox ItemsSource="{Binding Parameters}" ap:MultiSelectorHelper.SelectedItems="{Binding SelectedParameters, Mode=OneTime}"
+                         HorizontalContentAlignment="Stretch" ScrollViewer.CanContentScroll="True" Margin="0" 
+                         Background="{DynamicResource ABrush.Tone2.Background.Static}" BorderThickness="0"
+                         ItemContainerStyle="{StaticResource ListBoxItemNoBorder}"
+                         SelectionMode="Extended">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Margin="0 0" Text="{Binding TypeDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" Padding="0 2">
+                            <TextBlock Margin="0 0" Text="{Binding SimpleName, UpdateSourceTrigger=PropertyChanged}" Padding="0 2">
                                 <TextBlock.InputBindings>
                                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditFieldDescriptorCommand}"/>
                                 </TextBlock.InputBindings>

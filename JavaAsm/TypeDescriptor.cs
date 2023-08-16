@@ -52,7 +52,7 @@ namespace JavaAsm {
             int offset = 0;
             TypeDescriptor parsedType = Parse(descriptor, ref offset, allowVoid);
             if (offset != descriptor.Length)
-                throw new FormatException($"Exceed charaters in descriptor: {descriptor}");
+                throw new FormatException($"Character count discrepancy in descriptor: {descriptor}");
             return parsedType;
         }
 
@@ -225,5 +225,22 @@ namespace JavaAsm {
         Long,
         Short,
         Void
+    }
+
+    public static class PrimitiveTypeExtension {
+        public static string ToKeyword(this PrimitiveType type) {
+            switch (type) {
+                case PrimitiveType.Boolean:   return "boolean";
+                case PrimitiveType.Byte:      return "byte";
+                case PrimitiveType.Character: return "char";
+                case PrimitiveType.Double:    return "double";
+                case PrimitiveType.Float:     return "float";
+                case PrimitiveType.Integer:   return "int";
+                case PrimitiveType.Long:      return "long";
+                case PrimitiveType.Short:     return "short";
+                case PrimitiveType.Void:      return "void";
+                default: throw new ArgumentOutOfRangeException(nameof(type), type, null);
+            }
+        }
     }
 }

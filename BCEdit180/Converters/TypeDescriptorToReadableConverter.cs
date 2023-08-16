@@ -44,34 +44,28 @@ namespace BCEdit180.Converters {
         }
 
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
-            if (value == null) {
-                return null;
+            if (value == null || value == DependencyProperty.UnsetValue) {
+                return value;
             }
+            else switch (value) {
+                case TypeDescriptor type:
+                    return TypeDescToStr(type);
+                case MethodDescriptor md: {
+                    StringBuilder result = new StringBuilder();
+                    result.Append('(');
+                    for (int i = 0; i < (md.ArgumentTypes.Count - 1); i++) {
+                        result.Append(TypeDescToStr(md.ArgumentTypes[i])).Append(", ");
+                    }
 
-            if (value == DependencyProperty.UnsetValue) {
-                return DependencyProperty.UnsetValue;
-            }
+                    if (md.ArgumentTypes.Count > 0) {
+                        result.Append(TypeDescToStr(md.ArgumentTypes[md.ArgumentTypes.Count - 1]));
+                    }
 
-            if (value is TypeDescriptor type) {
-                return TypeDescToStr(type);
-            }
-            else if (value is MethodDescriptor method) {
-                StringBuilder result = new StringBuilder();
-                result.Append('(');
-                for (int i = 0; i < (method.ArgumentTypes.Count - 1); i++) {
-                    result.Append(TypeDescToStr(method.ArgumentTypes[i])).Append(", ");
+                    result.Append(')');
+                    result.Append(TypeDescToStr(md.ReturnType));
+                    return result.ToString();
                 }
-
-                if (method.ArgumentTypes.Count > 0) {
-                    result.Append(TypeDescToStr(method.ArgumentTypes[method.ArgumentTypes.Count - 1]));
-                }
-
-                result.Append(')');
-                result.Append(TypeDescToStr(method.ReturnType));
-                return result.ToString();
-            }
-            else {
-                return "DEBUG_ERROR_NOT_DESCRIPTOR: " + (value == null ? "null" : (value.GetType() + " -> " + value));
+                default: return "DEBUG_ERROR_NOT_DESCRIPTOR: " + (value == null ? "null" : (value.GetType() + " -> " + value));
             }
             // throw new Exception("Cannot convert type " + value.GetType() + " to a string");
         }

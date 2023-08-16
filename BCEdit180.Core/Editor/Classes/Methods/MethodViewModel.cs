@@ -88,6 +88,18 @@ namespace BCEdit180.Core.Editor.Classes.Methods {
 
         public MethodNode Node { get; set; }
 
+        public static RelayCommand<MethodViewModel> EditAccessCommand { get; } = new RelayCommand<MethodViewModel>(async (x) => {
+            MethodAccessModifiers? result = await IoC.AccessEditors.EditMethodAccessAsync(x.Access);
+            if (result.HasValue)
+                x.Access = result.Value;
+        });
+
+        public static RelayCommand<MethodViewModel> EditDescriptorCommand { get; } = new RelayCommand<MethodViewModel>(async (x) => {
+            MethodDescriptor result = await IoC.TypeDescEditors.EditMethodDesc(x.MethodDescriptor);
+            if (result != null)
+                x.MethodDescriptor = result;
+        });
+
         public MethodViewModel() {
             this.Throws = new ObservableCollection<ClassNameViewModel>();
             this.VisibleAnnotationEditor = new AnnotationEditorViewModel();

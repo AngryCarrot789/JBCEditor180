@@ -49,26 +49,24 @@
         </Setter>
     </Style>
     <ControlTemplate x:Key="TextBoxErrorTemplate">
-        <DockPanel IsHitTestVisible="False">
-            <Border BorderBrush="#FFF01428" BorderThickness="1" MaxWidth="{Binding ElementName=AdornerPlaceholder, Path=ActualWidth}"
+        <DockPanel IsHitTestVisible="False" Width="{Binding ElementName=AdornerPlaceholder, Path=ActualWidth}">
+            <Border BorderBrush="#FFF01428" BorderThickness="1"
                     DockPanel.Dock="Top">
                 <AdornedElementPlaceholder x:Name="AdornerPlaceholder" />
             </Border>
-            <themes:SystemDropShadowChrome x:Name="shadow" Color="Transparent" HorizontalAlignment="Left">
+            <themes:SystemDropShadowChrome x:Name="shadow" Color="#71000000" HorizontalAlignment="Left"
+                                           MinWidth="{Binding ActualWidth, ElementName=AdornerPlaceholder}">
                 <Grid>
                     <Border Background="{DynamicResource ABrush.Tone5.Background.Static}"
                             BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
                             BorderThickness="1" CornerRadius="3" Opacity="1">
-                        <Border.Effect>
-                            <DropShadowEffect BlurRadius="15" Opacity="0.4" />
-                        </Border.Effect>
                     </Border>
                     <TextBlock Text="{Binding [0].ErrorContent}" 
-                           Foreground="Red" 
-                           Margin="5,1,1,1" 
-                           Padding="5" 
-                           ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Text}" 
-                           TextWrapping="Wrap" />
+                               Foreground="Red" 
+                               Margin="5,1,1,1" 
+                               Padding="5" 
+                               ToolTip="{Binding RelativeSource={RelativeSource Mode=Self}, Path=Text}" 
+                               TextWrapping="Wrap" />
                 </Grid>
             </themes:SystemDropShadowChrome>
         </DockPanel>
@@ -2620,6 +2618,10 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
+    </Style>
+
+    <Style x:Key="ListBoxItemNoBorder" TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+        <Setter Property="BorderThickness" Value="0"/>
     </Style>
 
     <Style TargetType="{x:Type ListBox}">

@@ -31,6 +31,7 @@
         </ObjectDataProvider.MethodParameters>
     </ObjectDataProvider>
 
+    <converters:TypeDescriptorToStringConverter x:Key="TypeDescriptorConverter"/>
     <converters:EnumToStringConverter x:Key="EnumToString"/>
     <converters:FQCNToWindowTitleConverter x:Key="FQCNTitleConverter"/>
     <converters:FilePathToWindowTitleConverter x:Key="FilePathTitleConverter"/>

@@ -31,6 +31,7 @@
                 xmlns:locals="clr-namespace:BCEdit180.Core.Editor.Classes.Bytecode.Locals;assembly=BCEdit180.Core"
                 xmlns:exceptionTable="clr-namespace:BCEdit180.Core.Editor.Classes.ExceptionTable;assembly=BCEdit180.Core"
                 xmlns:fields="clr-namespace:BCEdit180.Core.Editor.Classes.Fields;assembly=BCEdit180.Core"
+                xmlns:methods="clr-namespace:BCEdit180.Core.Editor.Classes.Methods;assembly=BCEdit180.Core"
                 mc:Ignorable="d"
                 Title="MainWindow" Width="1280" Height="720"
                 Style="{StaticResource CustomWindowStyleEx}"
@@ -87,6 +88,9 @@
               BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1">
             <MenuItem Header="File">
                 <MenuItem Header="Open folder" Command="{Binding OpenFolderCommand, Mode=OneTime}"/>
+                <Separator/>
+                <MenuItem Header="Save class" DataContext="{Binding ClassManager}" Command="{Binding ActiveClass.SaveCommand}"/>
+                <MenuItem Header="Save class As..." DataContext="{Binding ClassManager}" Command="{Binding ActiveClass.SaveAsCommand}"/>
             </MenuItem>
         </Menu>
         <Grid>
@@ -293,7 +297,7 @@
 
                                     <Button Command="{Binding EditAccessCommand, Mode=OneTime}" Grid.Column="2" Grid.Row="3" Margin="0,3,0,3" Content="Edit"/>
 
-                                    <TabControl Grid.Row="9" Grid.ColumnSpan="3" 
+                                    <TabControl Grid.Row="9" Grid.ColumnSpan="4" 
                                                 Background="{DynamicResource ABrush.Tone4.Background.Static}" 
                                                 BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" BorderThickness="1" Margin="5,5,5,5">
                                         <TabItem>
@@ -380,7 +384,7 @@
                                                 <Border Background="{DynamicResource ABrush.Tone4.Background.Static}" Grid.ColumnSpan="2"/>
                                                 <GroupBox Grid.Column="0" Style="{StaticResource SquaredGroupBox}" Margin="5,0,0,5">
                                                     <GroupBox.Header>
-                                                        <TextBlock Text="Inner Classes" Padding="5,2" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding SelectedInnerClasses.Count, StringFormat='Inner Classes ({0} selected)', FallbackValue='Inner Classes'}" Padding="5,2" VerticalAlignment="Center"/>
                                                     </GroupBox.Header>
                                                     <ListBox ItemsSource="{Binding InnerClasses}" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0"
                                                              ap:MultiSelectorHelper.SelectedItems="{Binding SelectedInnerClasses, Mode=OneTime}"
@@ -408,7 +412,7 @@
                                                 </GroupBox>
                                                 <GroupBox IsEnabled="{Binding Converter={x:Static c:NullToBoolConverter.ToFalse}}" Grid.Column="2" Style="{StaticResource SquaredGroupBox}" Margin="0,0,5,5">
                                                     <GroupBox.Header>
-                                                        <TextBlock Text="{Binding SelectedInnerClasses.Count, StringFormat='Inner Classes ({0} selected)', FallbackValue='Inner Classes'}" Padding="5,2" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="Inner Class Editor" Padding="5,2" VerticalAlignment="Center"/>
                                                     </GroupBox.Header>
                                                     <Grid>
                                                         <pe:PropertyEditor EditorRegistry="{x:Static innerClasses:InnerClassPropertyEditorRegistry.Instance}" InputItems="{Binding SelectedInnerClasses, Mode=OneTime}">
@@ -446,7 +450,7 @@
                                                     <TextBlock Text="Descriptor" Width="125" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,57,0,0" ToolTip="The method's descriptor, which shows the method parameters and return type"/>
                                                     <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource ClassName}" Text="{Binding ClassName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,0,0,0" FontWeight="Bold" FontFamily="Consolas" Height="26"/>
                                                     <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource MethodName}" Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,28,0,0" FontWeight="Bold" FontFamily="Consolas"  FontStyle="Italic" Height="26"/>
-                                                    <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource MethodDescriptor}" Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,56,100,0" FontWeight="Bold" />
+                                                    <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource MethodDescriptor}" Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged, Converter={x:Static c:TypeDescriptorToStringConverter.Instance}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,56,100,0" FontWeight="Bold" />
                                                 </Grid>
                                             </Grid>
                                         </TabItem>
@@ -474,30 +478,34 @@
                                             </TextBox>
                                         </DockPanel>
                                         <ListBox ItemsSource="{Binding Fields}" x:Name="FieldList"
+                                                 ap:MultiSelectorHelper.SelectedItems="{Binding SelectedFields, Mode=OneTime}"
                                                  BorderThickness="0"
                                                  SelectionMode="Extended"
                                                  HorizontalContentAlignment="Stretch"
                                                  Background="{DynamicResource ABrush.Tone4.Background.Static}"
                                                  BorderBrush="{DynamicResource PanelBorderBrush}" 
-                                                 SelectedItem="{Binding SelectedField}"
-                                                 SelectedIndex="{Binding SelectedIndex}"
+                                                 SelectedItem="{Binding PrimarySelectedField}"
+                                                 SelectedIndex="{Binding PrimarySelectedIndex}"
                                                  ap:HorizontalScrolling.UseHorizontalScrolling="True">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <controls1:FieldInfoControl DataContext="{Binding}"/>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
+                                            <ListBox.InputBindings>
+                                                <KeyBinding Key="Delete" Command="{Binding DeleteSelectedFieldsCommand, Mode=OneTime}"/>
+                                            </ListBox.InputBindings>
                                         </ListBox>
                                     </DockPanel>
                                     <Border Grid.Column="1" Grid.ColumnSpan="2" Margin="5,0,0,0">
-                                        <Grid DataContext="{Binding SelectedField}">
+                                        <Grid DataContext="{Binding PrimarySelectedField}">
                                             <TextBlock Text="Field Name" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" ToolTip="The name of this field (duh)"/>
                                             <TextBlock Text="Descriptor" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,26,0,0" ToolTip="The field's descriptor, which shows what type the field holds"/>
                                             <TextBlock Text="Signature" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,52,0,0" ToolTip="The field's signature, which is similar to the descriptor but also contains generic types too (e.g for an ArrayList element types)"/>
                                             <TextBlock Text="Access Flags" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,78,0,0"/>
                                             <TextBlock Text="Constant Value" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,104,0,0"/>
                                             <TextBox Foreground="{StaticResource FieldName}" Background="Transparent" Text="{Binding FieldName, UpdateSourceTrigger=PropertyChanged}"           HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,0,0,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas" Height="26"/>
-                                            <TextBox Foreground="{StaticResource FieldDescriptor}" Background="Transparent" Text="{Binding FieldDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,26,110,0" BorderThickness="0"  FontWeight="Bold" FontStyle="Italic" FontFamily="Consolas"  Height="26"/>
+                                            <TextBox Foreground="{StaticResource FieldDescriptor}" Background="Transparent" Text="{Binding FieldDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={x:Static c:TypeDescriptorToStringConverter.Instance}}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,26,110,0" BorderThickness="0"  FontWeight="Bold" FontStyle="Italic" FontFamily="Consolas"  Height="26"/>
                                             <TextBox Foreground="{StaticResource FieldDescriptor}" Background="Transparent" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"           HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,52,0,0" BorderThickness="0"  FontWeight="Bold" FontStyle="Italic"  FontFamily="Consolas" Height="26"/>
                                             <TextBox Foreground="{StaticResource ConstEnum}" Background="Transparent" Text="{Binding Access, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource EnumToString}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,78,110,0" BorderThickness="0"  FontWeight="Bold" />
                                             <TextBox Foreground="{StaticResource ConstNumeric}" Background="Transparent" Text="{Binding ConstantValue, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,104,173,0" BorderThickness="0"  FontWeight="Bold" />
@@ -554,28 +562,32 @@
                                             </TextBox>
                                         </DockPanel>
                                         <ListBox ItemsSource="{Binding Methods}" x:Name="MethodList"
+                                                 ap:MultiSelectorHelper.SelectedItems="{Binding SelectedMethods, Mode=OneTime}"
                                                  BorderThickness="0"
                                                  SelectionMode="Extended"
                                                  HorizontalContentAlignment="Stretch"
                                                  Background="{DynamicResource ABrush.Tone4.Background.Static}"
                                                  BorderBrush="{DynamicResource PanelBorderBrush}" 
-                                                 SelectedItem="{Binding SelectedMethod}"
-                                                 SelectedIndex="{Binding SelectedIndex}"
+                                                 SelectedItem="{Binding PrimarySelectedMethod}"
+                                                 SelectedIndex="{Binding PrimarySelectedIndex}"
                                                  ap:HorizontalScrolling.UseHorizontalScrolling="True">
                                             <ListBox.ItemTemplate>
                                                 <DataTemplate>
                                                     <controls1:MethodInfoControl DataContext="{Binding}"/>
                                                 </DataTemplate>
                                             </ListBox.ItemTemplate>
+                                            <ListBox.InputBindings>
+                                                <KeyBinding Key="Delete" Command="{Binding DeleteSelectedMethodsCommand, Mode=OneTime}"/>
+                                            </ListBox.InputBindings>
                                         </ListBox>
                                     </DockPanel>
                                     <Border BorderThickness="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0">
-                                        <TabControl DataContext="{Binding SelectedMethod, UpdateSourceTrigger=PropertyChanged}" 
+                                        <TabControl DataContext="{Binding PrimarySelectedMethod, UpdateSourceTrigger=PropertyChanged}"
                                                     Background="{DynamicResource ABrush.Tone3.Background.Static}" 
                                                     BorderBrush="{DynamicResource PanelBorderBrush}"
                                                     BorderThickness="0,1,0,0" Margin="0,-1,0,0">
                                             <TabItem Header="General Method Information" Style="{StaticResource NoLeftBorder}" Padding="12,4">
-                                                <Grid>
+                                                <Grid Margin="2,0,0,0">
                                                     <TextBlock Text="Method Name" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" ToolTip="The name of this method (duh)"/>
                                                     <TextBlock Text="Descriptor" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,26,0,0" ToolTip="The method's descriptor, which shows the method parameters and return type"/>
                                                     <TextBlock Text="Signature" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,52,0,0" ToolTip="The method's signature, which is similar to the descriptor but also contains generic types too (e.g for an ArrayList element types)"/>
@@ -584,12 +596,14 @@
                                                     <TextBlock Text="Max Local Vars" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,130,0,0" ToolTip="The maximum number of local variables the method has ('this' (if non-static), parameters and local variables, and possibly others?)"/>
                                                     <TextBlock Text="Instructions" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,156,0,0" ToolTip="The number of instruction nodes this method has"/>
                                                     <TextBox Foreground="{StaticResource MethodName}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,0,0,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas" Height="26"/>
-                                                    <TextBox Foreground="{StaticResource MethodDescriptor}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,26,100,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas"  FontStyle="Italic" Height="26"/>
+                                                    <TextBox Foreground="{StaticResource MethodDescriptor}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={x:Static c:TypeDescriptorToStringConverter.Instance}}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,26,100,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas"  FontStyle="Italic" Height="26"/>
                                                     <TextBox Foreground="{StaticResource MethodDescriptor}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,52,0,0" BorderThickness="0"  FontWeight="Bold"  FontFamily="Consolas" FontStyle="Italic" Height="26"/>
                                                     <TextBox Foreground="{StaticResource ConstEnum}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding Access, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource EnumToString}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,78,100,0" BorderThickness="0"  FontWeight="Bold" />
                                                     <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding MaxStack, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,104,0,0" BorderThickness="0"  FontWeight="Bold" Height="26"/>
                                                     <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding MaxLocals, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,130,0,0" BorderThickness="0"  FontWeight="Bold" Height="26"/>
                                                     <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding CodeEditor.ByteCodeEditor.Instructions.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" IsReadOnly="True"   HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,156,0,0" BorderThickness="0"  FontWeight="Bold" />
+                                                    <Button Command="{x:Static methods:MethodViewModel.EditDescriptorCommand}" CommandParameter="{Binding}" Margin="0,27,3,0" Content="Edit Descriptor" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
+                                                    <Button Command="{x:Static methods:MethodViewModel.EditAccessCommand}"     CommandParameter="{Binding}" Margin="0,79,3,0" Content="Edit Access"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
                                                     <TabControl Margin="3,135,3,3" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
                                                         <TabItem Padding="12,4">
                                                             <TabItem.Header>
@@ -901,7 +915,7 @@
                                                                                 <GridViewColumn Header="Descriptor" Width="350">
                                                                                     <GridViewColumn.CellTemplate>
                                                                                         <DataTemplate>
-                                                                                            <controls1:DoubleClickEditBox Foreground="{DynamicResource ClassName}" DataContext="{Binding}" Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" d:DataContext="{d:DesignInstance locals:LocalVariableViewModel}"/>
+                                                                                            <controls1:DoubleClickEditBox Foreground="{DynamicResource ClassName}" DataContext="{Binding}" Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged, Converter={x:Static c:TypeDescriptorToStringConverter.Instance}}" d:DataContext="{d:DesignInstance locals:LocalVariableViewModel}"/>
                                                                                         </DataTemplate>
                                                                                     </GridViewColumn.CellTemplate>
                                                                                 </GridViewColumn>

@@ -9,6 +9,9 @@ namespace JavaAsm.CustomAttributes.Annotation {
     public class AnnotationNode {
         public TypeDescriptor Type { get; set; }
 
+        public AnnotationNode() {
+        }
+
         public class ElementValuePair {
             public string ElementName { get; set; }
 

@@ -7,15 +7,13 @@
                     xmlns:utils="clr-namespace:BCEdit180.Core.Editor.Classes.Utils;assembly=BCEdit180.Core"
                     xmlns:descriptors="clr-namespace:BCEdit180.Core.Editor.Classes.Descriptors;assembly=BCEdit180.Core"
                     mc:Ignorable="d">
-    <converters:TypeDescriptorToStringConverter x:Key="TypeConverter"/>
-
     <Style TargetType="{x:Type local:MethodDescriptorControl}">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate>
                     <Grid d:DataContext="{d:DesignInstance utils:MethodDescriptorViewModel}">
                         <TextBox Foreground="{StaticResource MethodDescriptor}"
-                                 Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}"
+                                 Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={x:Static converters:TypeDescriptorToStringConverter.Instance}}"
                                  VerticalContentAlignment="Center"
                                  HorizontalAlignment="Stretch"
                                  VerticalAlignment="Stretch"
@@ -40,7 +38,7 @@
                     <Grid d:DataContext="{d:DesignInstance descriptors:TypeDescViewModel}">
                         <Label Margin="0,0,100,0" MinHeight="26" VerticalContentAlignment="Center" BorderThickness="0" Padding="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                             <TextBlock Foreground="{StaticResource FieldDescriptor}"
-                                       Text="{Binding TypeDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}"
+                                       Text="{Binding TypeDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={x:Static converters:TypeDescriptorToStringConverter.Instance}}"
                                        Background="Transparent"
                                        TextWrapping="NoWrap"
                                        FontWeight="Bold"

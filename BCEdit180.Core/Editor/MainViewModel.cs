@@ -4,11 +4,11 @@ using BCEdit180.Core.Editor.FileSystem.Physical;
 
 namespace BCEdit180.Core.Editor {
     public class MainViewModel : BaseViewModel {
-        public AsyncRelayCommand OpenFolderCommand { get; }
-
         public FileExplorerViewModel Explorer { get; }
 
         public ClassManagerViewModel ClassManager { get; }
+
+        public AsyncRelayCommand OpenFolderCommand { get; }
 
         public MainViewModel() {
             this.OpenFolderCommand = new AsyncRelayCommand(this.OpenFolderAction);

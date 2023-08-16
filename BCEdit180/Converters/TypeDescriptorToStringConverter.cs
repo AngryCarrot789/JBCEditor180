@@ -2,11 +2,15 @@
 using System.Diagnostics;
 using System.Globalization;
 using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
 using JavaAsm;
 
 namespace BCEdit180.Converters {
-    public class TypeDescriptorToStringConverter : SingletonValueConverter<TypeDescriptorToStringConverter> {
-        public override object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
+    public class TypeDescriptorToStringConverter : IValueConverter {
+        public static TypeDescriptorToStringConverter Instance { get; } = new TypeDescriptorToStringConverter();
+
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture) {
             if (value == null || value == DependencyProperty.UnsetValue) {
                 return value;
             }
@@ -19,7 +23,7 @@ namespace BCEdit180.Converters {
             // throw new Exception("Cannot convert type " + value.GetType() + " to a string");
         }
 
-        public override object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture) {
             string str = value?.ToString() ?? "";
             if (str.Length == 0) {
                 return DependencyProperty.UnsetValue;
@@ -29,7 +33,6 @@ namespace BCEdit180.Converters {
                     return MethodDescriptor.Parse(str);
                 }
                 catch {
-                    Debug.WriteLine("Failed to parse MethodDescriptor for value: " + value);
                     return DependencyProperty.UnsetValue;
                 }
             }
@@ -38,7 +41,6 @@ namespace BCEdit180.Converters {
                     return TypeDescriptor.Parse(str);
                 }
                 catch {
-                    Debug.WriteLine("Failed to parse TypeDescriptor for value: " + value);
                     return DependencyProperty.UnsetValue;
                 }
             }

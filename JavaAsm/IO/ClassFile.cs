@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using BinaryEncoding;
 using JavaAsm.IO.ConstantPoolEntries;
 
@@ -93,6 +94,54 @@ namespace JavaAsm.IO {
             return result;
         }
 
+        public static async Task<ClassNode> ParseClassAsync(Stream stream) {
+            ClassReaderState state = new ClassReaderState();
+            ClassNode result = new ClassNode();
+            state.ClassNode = result;
+
+            if (await Binary.BigEndian.ReadUInt32Async(stream) != Magic)
+                throw new IOException("Wrong magic in class");
+
+            result.MinorVersion = await Binary.BigEndian.ReadUInt16Async(stream);
+            result.MajorVersion = (ClassVersion) await Binary.BigEndian.ReadUInt16Async(stream);
+
+            if (result.MajorVersion > ClassVersion.Java8)
+                throw new Exception($"Wrong Java version: {result.MajorVersion}");
+
+            ConstantPool constantPool = new ConstantPool();
+            constantPool.Read(stream);
+            state.ConstantPool = constantPool;
+
+            result.Access = (ClassAccessModifiers) await Binary.BigEndian.ReadUInt16Async(stream);
+
+            result.Name = new ClassName(constantPool.GetEntry<ClassEntry>(await Binary.BigEndian.ReadUInt16Async(stream)).Name.Value);
+            result.SuperName = new ClassName(constantPool.GetEntry<ClassEntry>(await Binary.BigEndian.ReadUInt16Async(stream)).Name.Value);
+
+            ushort interfacesCount = await Binary.BigEndian.ReadUInt16Async(stream);
+            result.Interfaces.Capacity = interfacesCount;
+            for (int i = 0; i < interfacesCount; i++)
+                result.Interfaces.Add(new ClassName(constantPool.GetEntry<ClassEntry>(await Binary.BigEndian.ReadUInt16Async(stream)).Name.Value));
+
+            ushort fieldsCount = await Binary.BigEndian.ReadUInt16Async(stream);
+            result.Fields.Capacity = fieldsCount;
+            for (int i = 0; i < fieldsCount; i++)
+                result.Fields.Add(ParseField(stream, state));
+
+            ushort methodsCount = await Binary.BigEndian.ReadUInt16Async(stream);
+            result.Methods.Capacity = methodsCount;
+            for (int i = 0; i < methodsCount; i++)
+                result.Methods.Add(ParseMethod(stream, state));
+
+            ushort attributesCount = await Binary.BigEndian.ReadUInt16Async(stream);
+            result.Attributes.Capacity = attributesCount;
+            for (int i = 0; i < attributesCount; i++)
+                result.Attributes.Add(ParseAttribute(stream, state, AttributeScope.Class));
+
+            result.Parse(state);
+
+            return result;
+        }
+
         internal static void WriteAttribute(Stream stream, AttributeNode attribute, ClassWriterState state, AttributeScope scope) {
             Binary.BigEndian.Write(stream, state.ConstantPool.Find(new Utf8Entry(attribute.Name)));
             attribute.Data = attribute.ParsedAttribute?.Save(state, scope) ?? attribute.Data;
@@ -171,6 +220,55 @@ namespace JavaAsm.IO {
             constantPool.Write(stream);
             byte[] data = afterConstantPoolDataStream.ToArray();
             stream.Write(data, 0, data.Length);
+        }
+
+         public static async Task WriteClassAsync(Stream stream, ClassNode classNode) {
+            await Binary.BigEndian.WriteAsync(stream, Magic);
+            await Binary.BigEndian.WriteAsync(stream, classNode.MinorVersion);
+            await Binary.BigEndian.WriteAsync(stream, (ushort) classNode.MajorVersion);
+            MemoryStream afterConstantPoolDataStream = new MemoryStream();
+            ConstantPool constantPool = new ConstantPool();
+            ClassWriterState state = new ClassWriterState {
+                ClassNode = classNode,
+                ConstantPool = constantPool
+            };
+
+            classNode.Save(state);
+
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream, (ushort) classNode.Access);
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream,
+                constantPool.Find(new ClassEntry(new Utf8Entry(classNode.Name.Name))));
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream,
+                constantPool.Find(new ClassEntry(new Utf8Entry(classNode.SuperName.Name))));
+
+            if (classNode.Interfaces.Count > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(classNode.Interfaces.Count), $"Too many interfaces: {classNode.Interfaces.Count} > {ushort.MaxValue}");
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream, (ushort) classNode.Interfaces.Count);
+            foreach (ClassName interfaceClassName in classNode.Interfaces)
+                await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream,
+                    constantPool.Find(new ClassEntry(new Utf8Entry(interfaceClassName.Name))));
+
+            if (classNode.Fields.Count > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(classNode.Fields.Count), $"Too many fields: {classNode.Fields.Count} > {ushort.MaxValue}");
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream, (ushort) classNode.Fields.Count);
+            foreach (FieldNode field in classNode.Fields)
+                WriteField(afterConstantPoolDataStream, field, state);
+
+            if (classNode.Methods.Count > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(classNode.Methods.Count), $"Too many methods: {classNode.Methods.Count} > {ushort.MaxValue}");
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream, (ushort) classNode.Methods.Count);
+            foreach (MethodNode method in classNode.Methods)
+                WriteMethod(afterConstantPoolDataStream, method, state);
+
+            if (classNode.Attributes.Count > ushort.MaxValue)
+                throw new ArgumentOutOfRangeException(nameof(classNode.Attributes.Count), $"Too many attributes: {classNode.Attributes.Count} > {ushort.MaxValue}");
+            await Binary.BigEndian.WriteAsync(afterConstantPoolDataStream, (ushort) classNode.Attributes.Count);
+            foreach (AttributeNode attriute in classNode.Attributes)
+                WriteAttribute(afterConstantPoolDataStream, attriute, state, AttributeScope.Class);
+
+            constantPool.Write(stream);
+            byte[] data = afterConstantPoolDataStream.ToArray();
+            await stream.WriteAsync(data, 0, data.Length);
         }
     }
 }

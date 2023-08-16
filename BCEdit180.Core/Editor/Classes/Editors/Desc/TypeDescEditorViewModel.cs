@@ -1,4 +1,5 @@
 using System;
+using System.Threading.Tasks;
 using BCEdit180.Core.Utils;
 using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;
@@ -21,22 +22,23 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
             set {
                 this.RaisePropertyChanged(ref this.inputText, value);
                 this.UpdateClassName(true);
+                this.ConfirmCommand.RaiseCanExecuteChanged();
             }
         }
 
         public string PreviewInternalName {
             get => this.previewInternalName;
-            set => this.RaisePropertyChanged(ref this.previewInternalName, value);
+            private set => this.RaisePropertyChanged(ref this.previewInternalName, value);
         }
 
         public string PreviewDescriptor {
             get => this.previewDescriptor;
-            set => this.RaisePropertyChanged(ref this.previewDescriptor, value);
+            private set => this.RaisePropertyChanged(ref this.previewDescriptor, value);
         }
 
         public string PreviewClassName {
             get => this.previewClassName;
-            set => this.RaisePropertyChanged(ref this.previewClassName, value);
+            private set => this.RaisePropertyChanged(ref this.previewClassName, value);
         }
 
         public PrimitiveType SelectedPrimitive {
@@ -99,6 +101,10 @@ namespace BCEdit180.Core.Editor.Classes.Editors.Desc {
                 this.SelectedPrimitive = desc.PrimitiveType.Value;
                 this.IsPrimitive = true;
             }
+        }
+
+        protected override bool CanConfirm() {
+            return base.CanConfirm() && (!this.IsObject || !string.IsNullOrEmpty(this.InputText));
         }
 
         public void UpdateClassName(bool calculateArrayDepth) {

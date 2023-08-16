@@ -1,33 +1,43 @@
 using System.Collections.ObjectModel;
+using System.Linq;
 using JavaAsm;
 
 namespace BCEdit180.Core.Editor.Classes.Fields {
     public class FieldListViewModel : BaseViewModel {
         public ObservableCollection<FieldViewModel> Fields { get; }
 
-        private FieldViewModel selectedField;
+        private FieldViewModel primarySelectedField;
 
-        public FieldViewModel SelectedField {
-            get => this.selectedField;
-            set => this.RaisePropertyChanged(ref this.selectedField, value);
+        public FieldViewModel PrimarySelectedField {
+            get => this.primarySelectedField;
+            set => this.RaisePropertyChanged(ref this.primarySelectedField, value);
         }
 
-        private int previousIndex;
-        private int selectedIndex;
+        public ObservableCollection<FieldViewModel> SelectedFields { get; }
 
-        public int SelectedIndex {
-            get => this.selectedIndex;
+        private int previousIndex;
+        private int primarySelectedIndex;
+        public int PrimarySelectedIndex {
+            get => this.primarySelectedIndex;
             set {
-                this.previousIndex = this.selectedIndex;
-                this.RaisePropertyChanged(ref this.selectedIndex, value);
+                this.previousIndex = this.primarySelectedIndex;
+                this.RaisePropertyChanged(ref this.primarySelectedIndex, value);
             }
         }
 
         public ClassViewModel Class { get; }
 
+        public RelayCommand DeleteSelectedFieldsCommand { get; }
+
         public FieldListViewModel(ClassViewModel clazz) {
             this.Class = clazz;
             this.Fields = new ObservableCollection<FieldViewModel>();
+            this.SelectedFields = new ObservableCollection<FieldViewModel>();
+            this.DeleteSelectedFieldsCommand = new RelayCommand(() => {
+                foreach (FieldViewModel field in this.SelectedFields.ToList()) {
+                    this.Fields.Remove(field);
+                }
+            });
         }
 
         public void Load(ClassNode node) {
@@ -37,7 +47,7 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
             }
 
             if (this.previousIndex >= 0 && this.previousIndex < this.Fields.Count) {
-                this.SelectedIndex = this.previousIndex;
+                this.PrimarySelectedIndex = this.previousIndex;
             }
         }
 

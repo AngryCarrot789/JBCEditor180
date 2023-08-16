@@ -21,5 +21,11 @@ namespace BCEdit180.Core.Utils {
                    AddFilter("FLV", "flv").
                    AddAllFiles().
                    ToString();
+
+        public static readonly string ClassAndAll =
+            Filter.Of().
+                   AddFilter("Java Class File", "class").
+                   AddAllFiles().
+                   ToString();
     }
 }
