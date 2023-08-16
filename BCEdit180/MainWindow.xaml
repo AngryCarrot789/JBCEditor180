@@ -1,0 +1,968 @@
+﻿<views:WindowEx x:Class="BCEdit180.MainWindow"
+                xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                xmlns:local="clr-namespace:BCEdit180"
+                xmlns:views="clr-namespace:BCEdit180.Views"
+                xmlns:editor="clr-namespace:BCEdit180.Core.Editor;assembly=BCEdit180.Core"
+                xmlns:physical="clr-namespace:BCEdit180.Core.Editor.FileSystem.Physical;assembly=BCEdit180.Core"
+                xmlns:jar="clr-namespace:BCEdit180.Core.Editor.FileSystem.Zip;assembly=BCEdit180.Core"
+                xmlns:ap="clr-namespace:BCEdit180.AttachedProperties"
+                xmlns:sc="clr-namespace:BCEdit180.Shortcuts"
+                xmlns:acs="clr-namespace:BCEdit180.AdvancedContextService"
+                xmlns:c="clr-namespace:BCEdit180.Converters"
+                xmlns:classes="clr-namespace:BCEdit180.Core.Editor.Classes;assembly=BCEdit180.Core"
+                xmlns:javaAsm="clr-namespace:JavaAsm;assembly=JavaAsm"
+                xmlns:e="clr-namespace:BCEdit180.Core.Editor.Context;assembly=BCEdit180.Core"
+                xmlns:utils="clr-namespace:BCEdit180.Utils"
+                xmlns:controls="clr-namespace:BCEdit180.Controls"
+                xmlns:pe="clr-namespace:BCEdit180.PropertyEditing"
+                xmlns:cpe="clr-namespace:BCEdit180.Core.Editor.Classes.PropertyEditors;assembly=BCEdit180.Core"
+                xmlns:attached="clr-namespace:BCEdit180.Themes.Attached"
+                xmlns:an="clr-namespace:BCEdit180.Core.Editor.Classes.Annotations;assembly=BCEdit180.Core"
+                xmlns:entries="clr-namespace:BCEdit180.Core.Editor.Classes.Annotations.Entries;assembly=BCEdit180.Core"
+                xmlns:an1="clr-namespace:BCEdit180.Editor.Controls.Annotations"
+                xmlns:innerClasses="clr-namespace:BCEdit180.Core.Editor.Classes.PropertyEditors.InnerClasses;assembly=BCEdit180.Core"
+                xmlns:instructions="clr-namespace:BCEdit180.Core.Editor.Classes.Bytecode.Instructions;assembly=BCEdit180.Core"
+                xmlns:controls1="clr-namespace:BCEdit180.Editor.Controls"
+                xmlns:listControls="clr-namespace:BCEdit180.Editor.Controls.Bytecode"
+                xmlns:editorControls="clr-namespace:BCEdit180.Editor.Controls.Bytecode.EditorControls"
+                xmlns:locals="clr-namespace:BCEdit180.Core.Editor.Classes.Bytecode.Locals;assembly=BCEdit180.Core"
+                xmlns:exceptionTable="clr-namespace:BCEdit180.Core.Editor.Classes.ExceptionTable;assembly=BCEdit180.Core"
+                mc:Ignorable="d"
+                Title="MainWindow" Width="1280" Height="720"
+                Style="{StaticResource CustomWindowStyleEx}"
+                TitlebarBrush="{DynamicResource ABrush.Tone5.Background.Static}"
+                d:DataContext="{d:DesignInstance editor:MainViewModel}">
+    <Window.Resources>
+        <Style x:Key="AccentToneMouseOverButton" TargetType="{x:Type Button}">
+            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+            <Setter Property="Background" Value="{DynamicResource Button.Static.Background}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource Button.Static.Border}" />
+            <Setter Property="Foreground" Value="{DynamicResource Button.Static.Foreground}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Padding" Value="1" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}" SnapsToDevicePixels="true"
+                                CornerRadius="{TemplateBinding attached:CornerRadiusHelper.Value}">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}"
+                                      Margin="{TemplateBinding Padding}" RecognizesAccessKey="True"
+                                      SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                      VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsDefaulted" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource Button.Defaulted.Background}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource Button.Defaulted.Border}" />
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ABrush.AccentTone3.Background.Static}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ABrush.AccentTone3.Border.Static}" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource ABrush.AccentTone1.Background.Static}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource ABrush.AccentTone1.Border.Static}" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="false">
+                                <Setter Property="Background" TargetName="border" Value="{DynamicResource Button.Disabled.Background}" />
+                                <Setter Property="BorderBrush" TargetName="border" Value="{DynamicResource Button.Disabled.Border}" />
+                                <Setter Property="TextElement.Foreground" TargetName="contentPresenter" Value="{DynamicResource Button.Disabled.Foreground}" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+    <DockPanel>
+        <Menu DockPanel.Dock="Top" Background="{Binding RelativeSource={RelativeSource AncestorType={x:Type views:WindowEx}}, Path=TitlebarBrush, Mode=OneWay}"
+              BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,0,0,1">
+            <MenuItem Header="File">
+                <MenuItem Header="Open folder" Command="{Binding OpenFolderCommand, Mode=OneTime}"/>
+            </MenuItem>
+        </Menu>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200" x:Name="TreeListColumn" MaxWidth="600"/>
+                <ColumnDefinition Width="5"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Background="{DynamicResource ABrush.Tone5.Background.Static}" BorderThickness="0">
+                <TreeView ItemsSource="{Binding Explorer.Root.Items}" Background="Transparent" BorderThickness="0" ap:HandleRequestBringIntoView.IsEnabled="True">
+                    <TreeView.ItemContainerStyle>
+                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                        </Style>
+                    </TreeView.ItemContainerStyle>
+                    <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type physical:IOFolderItemViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
+                            <TextBlock Text="{Binding FileName, Mode=OneWay}"/>
+                        </HierarchicalDataTemplate>
+                        <DataTemplate DataType="{x:Type physical:IOFileItemViewModel}">
+                            <TextBlock Text="{Binding FileName, Mode=OneWay}"/>
+                        </DataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type jar:ZipFileViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
+                            <TextBlock Text="{Binding FileName, Mode=OneWay}"/>
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type jar:ZipFolderEntryViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
+                            <TextBlock Text="{Binding FullZipPath, Mode=OneWay}"/>
+                        </HierarchicalDataTemplate>
+                        <DataTemplate DataType="{x:Type jar:ZipFileEntryViewModel}">
+                            <TextBlock Text="{Binding FullZipPath, Mode=OneWay}"/>
+                        </DataTemplate>
+                    </TreeView.Resources>
+                </TreeView>
+            </Border>
+            <Border Grid.Column="2" BorderThickness="0" 
+                    Background="{DynamicResource ABrush.Tone2.Background.Static}" 
+                    SnapsToDevicePixels="True">
+                <DockPanel DataContext="{Binding ClassManager, Mode=OneTime}">
+                    <!-- Just used for a nice looking selector -->
+                    <Border DockPanel.Dock="Top" BorderThickness="0,0,0,1" 
+                            BorderBrush="{DynamicResource PanelBorderBrush}" 
+                            Margin="0,0,0,-1">
+                        <TabControl Style="{StaticResource NoOffsetAndNoContentTabControl}"
+                                    Background="{DynamicResource ABrush.Tone5.Background.Static}"
+                                    ItemsSource="{Binding Classes, Mode=OneTime}"
+                                    SelectedItem="{Binding ActiveClass, Mode=TwoWay}"
+                                    Height="24">
+                            <TabControl.ItemContainerStyle>
+                                <Style TargetType="{x:Type TabItem}">
+                                    <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+                                    <Setter Property="Foreground" Value="{DynamicResource ABrush.Foreground.Static}" />
+                                    <Setter Property="Background" Value="{DynamicResource TabItem.Static.Background}" />
+                                    <Setter Property="BorderBrush" Value="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=TabControl}, Path=BorderBrush}" />
+                                    <Setter Property="Margin" Value="-1,0,0,-1" />
+                                    <Setter Property="Padding" Value="10,4,10,4" />
+                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                                    <Setter Property="VerticalContentAlignment" Value="Stretch" />
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type TabItem}">
+                                                <Grid x:Name="templateRoot" SnapsToDevicePixels="true">
+                                                    <Border x:Name="mainBorder" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="0,0,1,1" />
+                                                    <Border x:Name="PART_SelectionBorder" Background="{DynamicResource ABrush.AccentTone2.Background.Static}" VerticalAlignment="Bottom" Height="3" Visibility="Collapsed" />
+                                                    <ContentPresenter x:Name="contentPresenter" ContentSource="Header" Focusable="False"
+                                                                      HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}"
+                                                                      Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}"
+                                                                      VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding IsMouseOver, RelativeSource={RelativeSource Self}}" Value="True">
+                                                        <Setter Property="Background" TargetName="mainBorder" Value="{DynamicResource TabItem.MouseOver.Background}" />
+                                                        <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource TabItem.MouseOver.Background}" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsSelected, RelativeSource={RelativeSource Self}}" Value="True">
+                                                        <Setter Property="Background" TargetName="mainBorder" Value="{DynamicResource ABrush.Tone4.Background.Disabled}" />
+                                                        <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource ABrush.Tone4.Background.Disabled}" />
+                                                        <Setter Property="Visibility" TargetName="PART_SelectionBorder" Value="Visible" />
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding IsEnabled, RelativeSource={RelativeSource Self}}" Value="False">
+                                                        <Setter Property="Opacity" TargetName="contentPresenter" Value="0.56" />
+                                                        <Setter Property="Background" TargetName="mainBorder" Value="{DynamicResource TabItem.Disabled.Background}" />
+                                                        <Setter Property="BorderBrush" TargetName="mainBorder" Value="{DynamicResource TabItem.Disabled.Background}" />
+                                                    </DataTrigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TabControl.ItemContainerStyle>
+                            <TabControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding ClassInfo.SimpleClassName, Mode=OneWay}"/>
+                                </DataTemplate>
+                            </TabControl.ItemTemplate>
+                        </TabControl>
+                    </Border>
+                    <Grid>
+                        <TextBlock Text="Open (or select) a class to view or modify it" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="14" Foreground="{DynamicResource ABrush.Foreground.Deeper}"/>
+                        <!-- Visibility="{Binding Converter={x:Static c:NullToVisibilityConverter.ToCollapsedOrVisible}}" -->
+                        <TabControl DataContext="{Binding ActiveClass, Mode=OneWay}" 
+                                    Background="{DynamicResource ABrush.Tone3.Background.Static}" 
+                                    BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="0,1,0,1"
+                                    x:Name="ActiveClassTabControl" TabStripPlacement="Bottom">
+                            <TabControl.Style>
+                                <Style TargetType="{x:Type TabControl}" BasedOn="{StaticResource {x:Type TabControl}}">
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="{x:Type TabControl}">
+                                                <Grid x:Name="templateRoot" ClipToBounds="true" SnapsToDevicePixels="true" KeyboardNavigation.TabNavigation="Local">
+                                                    <Grid.ColumnDefinitions>
+                                                        <ColumnDefinition x:Name="ColumnDefinition0" />
+                                                        <ColumnDefinition x:Name="ColumnDefinition1" Width="0" />
+                                                    </Grid.ColumnDefinitions>
+                                                    <Grid.RowDefinitions>
+                                                        <RowDefinition x:Name="RowDefinition0" Height="Auto" />
+                                                        <RowDefinition x:Name="RowDefinition1" Height="*" />
+                                                    </Grid.RowDefinitions>
+                                                    <!--
+                                                    <Border Background="{DynamicResource ABrush.Tone5.Background.Static}" Grid.Column="0" Margin="2,0,0,0" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" SnapsToDevicePixels="True"/>
+                                                    -->
+                                                    <TabPanel x:Name="headerPanel" Background="Transparent" Grid.Column="0" IsItemsHost="true" Margin="2,2,0,0" Grid.Row="0" KeyboardNavigation.TabIndex="1" Panel.ZIndex="1" />
+                                                    <Border x:Name="contentPanel" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Background="{TemplateBinding Background}" Grid.Column="0" KeyboardNavigation.DirectionalNavigation="Contained" Grid.Row="1" KeyboardNavigation.TabIndex="2" KeyboardNavigation.TabNavigation="Local">
+                                                        <ContentPresenter x:Name="PART_SelectedContentHost" ContentSource="SelectedContent" Margin="{TemplateBinding Padding}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" />
+                                                    </Border>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="TabStripPlacement" Value="Bottom">
+                                                        <Setter Property="Grid.Row" TargetName="headerPanel" Value="1" />
+                                                        <Setter Property="Grid.Row" TargetName="contentPanel" Value="0" />
+                                                        <Setter Property="Height" TargetName="RowDefinition0" Value="*" />
+                                                        <Setter Property="Height" TargetName="RowDefinition1" Value="Auto" />
+                                                        <Setter Property="Margin" TargetName="headerPanel" Value="2,0,2,2" />
+                                                    </Trigger>
+                                                    <Trigger Property="TabStripPlacement" Value="Left">
+                                                        <Setter Property="Grid.Row" TargetName="headerPanel" Value="0" />
+                                                        <Setter Property="Grid.Row" TargetName="contentPanel" Value="0" />
+                                                        <Setter Property="Grid.Column" TargetName="headerPanel" Value="0" />
+                                                        <Setter Property="Grid.Column" TargetName="contentPanel" Value="1" />
+                                                        <Setter Property="Width" TargetName="ColumnDefinition0" Value="Auto" />
+                                                        <Setter Property="Width" TargetName="ColumnDefinition1" Value="*" />
+                                                        <Setter Property="Height" TargetName="RowDefinition0" Value="*" />
+                                                        <Setter Property="Height" TargetName="RowDefinition1" Value="0" />
+                                                        <Setter Property="Margin" TargetName="headerPanel" Value="2,2,0,2" />
+                                                    </Trigger>
+                                                    <Trigger Property="TabStripPlacement" Value="Right">
+                                                        <Setter Property="Grid.Row" TargetName="headerPanel" Value="0" />
+                                                        <Setter Property="Grid.Row" TargetName="contentPanel" Value="0" />
+                                                        <Setter Property="Grid.Column" TargetName="headerPanel" Value="1" />
+                                                        <Setter Property="Grid.Column" TargetName="contentPanel" Value="0" />
+                                                        <Setter Property="Width" TargetName="ColumnDefinition0" Value="*" />
+                                                        <Setter Property="Width" TargetName="ColumnDefinition1" Value="Auto" />
+                                                        <Setter Property="Height" TargetName="RowDefinition0" Value="*" />
+                                                        <Setter Property="Height" TargetName="RowDefinition1" Value="0" />
+                                                        <Setter Property="Margin" TargetName="headerPanel" Value="0,2,2,2" />
+                                                    </Trigger>
+                                                    <Trigger Property="IsEnabled" Value="false">
+                                                        <Setter Property="TextElement.Foreground" TargetName="templateRoot" Value="{DynamicResource ABrush.Foreground.Disabled}" />
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </TabControl.Style>
+                            <TabItem Header="Class Info" Padding="12,3" DataContext="{Binding ClassInfo, Mode=OneTime}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="28"/>
+                                        <RowDefinition Height="*"/>
+                                    </Grid.RowDefinitions>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="110"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="0" FontWeight="Bold" Text="Minor Version"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="1" FontWeight="Bold" Text="Major Version"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="2" FontWeight="Bold" Text="Const Pool Size"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="3" FontWeight="Bold" Text="Access Flags"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="4" FontWeight="Bold" Text="This Class"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="5" FontWeight="Bold" Text="Super Class"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="6" FontWeight="Bold" Text="Signature"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="7" FontWeight="Bold" Text="Methods"/>
+                                    <TextBlock VerticalAlignment="Center" Margin="6,0,0,0" Grid.Row="8" FontWeight="Bold" Text="Fields"/>
+
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="0" Text="{Binding MinorVersion}"/>
+                                    <ComboBox  VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Source={StaticResource ClassVersionObjectDataProvider}}" SelectedItem="{Binding MajorVersion}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="2" Text="coming soon"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="3" Text="{Binding AccessFlags, UpdateSourceTrigger=PropertyChanged}"   Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="4" Text="{Binding FullClassName, UpdateSourceTrigger=PropertyChanged}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="5" Text="{Binding SuperName, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                    <TextBox   VerticalAlignment="Center" Padding="4,2,4,2" Margin="0,0,6,0" Grid.Column="1" Grid.Row="6" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"     Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="7" Text="{Binding}"/>
+                                    <TextBlock VerticalAlignment="Center" Padding="4,0,4,0" Margin="0,0,6,0" Grid.Column="1" Grid.Row="8" Text="{Binding}"/>
+
+                                    <TabControl Grid.Row="9" Grid.ColumnSpan="2" 
+                                                Background="{DynamicResource ABrush.Tone4.Background.Static}" 
+                                                BorderBrush="{DynamicResource PanelBorderBrush}" BorderThickness="1,1,0,0" Margin="0,0,0,0">
+                                        <TabItem>
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding Interfaces.Count, Mode=OneWay, FallbackValue=Interfaces, StringFormat='Interfaces ({0})'}" 
+                                                               HorizontalAlignment="Center" Padding="3,1,10,1" 
+                                                               FontWeight="Bold" VerticalAlignment="Center"/>
+                                                    <Button Command="{Binding AddNewInterfaceCommand, Mode=OneTime}" ToolTip="Add interface" 
+                                                            Width="18" Height="18" 
+                                                            Background="{DynamicResource ABrush.Tone7.Background.Static}" 
+                                                            BorderThickness="0" 
+                                                            Margin="3,2,-5,0">
+                                                        <TextBlock Text="+" Margin="0 -2 0 0"/>
+                                                    </Button>
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <ListBox BorderThickness="0" Background="Transparent" ItemsSource="{Binding Interfaces, Mode=OneTime}"
+                                                     acs:AdvancedContextMenu.ContextGenerator="{x:Static e:InterfaceContextGenerator.Instance}">
+                                                <ListBox.ItemTemplate>
+                                                    <DataTemplate>
+                                                        <TextBlock Text="{Binding FullName}" Padding="5,4" HorizontalAlignment="Stretch"/>
+                                                    </DataTemplate>
+                                                </ListBox.ItemTemplate>
+                                                <ListBox.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                                        <Setter Property="Padding" Value="0"/>
+                                                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                                                    </Style>
+                                                </ListBox.ItemContainerStyle>
+                                            </ListBox>
+                                        </TabItem>
+                                        <TabItem Style="{StaticResource NoLeftBorder}" DataContext="{Binding Class.ClassAttributes, Mode=OneTime}">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Source File" VerticalAlignment="Center" Padding="0,2"/>
+                                                    <CheckBox Margin="5 0 0 0" Content="Use" IsChecked="{Binding IsEnabledSourceFile}" Width="42"/>
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <Grid IsEnabled="{Binding IsEnabledSourceFile}">
+                                                <StackPanel DataContext="{Binding SourceFile}">
+                                                    <TextBlock Padding="10" Text="Source file (Could be a .java class. This is used mainly in stack traces)" VerticalAlignment="Top"/>
+                                                    <DockPanel Margin="5,0">
+                                                        <TextBlock Padding="5" Text="File Name:" VerticalAlignment="Top" HorizontalAlignment="Left" Width="74"/>
+                                                        <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" 
+                                                                 Background="{DynamicResource ABrush.Tone2.Background.Static}" 
+                                                                 Text="{Binding SourceFile, UpdateSourceTrigger=PropertyChanged}"
+                                                                 VerticalAlignment="Top" Margin="0" Height="29" 
+                                                                 Padding="5" VerticalContentAlignment="Center"/>
+                                                    </DockPanel>
+                                                </StackPanel>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem DataContext="{Binding Class.ClassAttributes, Mode=OneTime}">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock VerticalAlignment="Center" Text="Source Debug Extension"/>
+                                                    <CheckBox Margin="5 0 0 0" Content="Use" IsChecked="{Binding IsEnabledSourceDebug}" Width="42"/>
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <Grid IsEnabled="{Binding IsEnabledSourceDebug}">
+                                                <DockPanel DataContext="{Binding SourceDebug}">
+                                                    <TextBlock DockPanel.Dock="Top" Margin="10,5,10,0" VerticalAlignment="Top" Text="I have no idea what this is really used for... it just has a string value. Additional debug info?"/>
+                                                    <TextBox Padding="5" Margin="5" VerticalContentAlignment="Top" AcceptsReturn="True" AcceptsTab="False"
+                                                             Text="{Binding Value, UpdateSourceTrigger=PropertyChanged}"
+                                                             BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" 
+                                                             Background="{DynamicResource ABrush.Tone2.Background.Static}"/>
+                                                </DockPanel>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem DataContext="{Binding Class.ClassAttributes, Mode=OneTime}">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Inner Classes" VerticalAlignment="Center"/>
+                                                    <CheckBox Margin="5 0 0 0" Content="Use" IsChecked="{Binding IsEnabledInnerClasses}" Width="42"/>
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <Grid IsEnabled="{Binding IsEnabledInnerClasses}">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="200" MinWidth="100"/>
+                                                    <ColumnDefinition Width="6"/>
+                                                    <ColumnDefinition Width="1037*"/>
+                                                </Grid.ColumnDefinitions>
+                                                <Border Background="{DynamicResource ABrush.Tone4.Background.Static}" Grid.ColumnSpan="2"/>
+                                                <GroupBox Grid.Column="0" Style="{StaticResource SquaredGroupBox}" Margin="5,0,0,5">
+                                                    <GroupBox.Header>
+                                                        <TextBlock Text="Inner Classes" Padding="5,2" VerticalAlignment="Center"/>
+                                                    </GroupBox.Header>
+                                                    <ListBox ItemsSource="{Binding InnerClasses}" HorizontalContentAlignment="Stretch" Background="Transparent" BorderThickness="0"
+                                                             ap:MultiSelectorHelper.SelectedItems="{Binding SelectedInnerClasses, Mode=OneTime}"
+                                                             SelectionMode="Extended">
+                                                        <ListBox.ItemContainerStyle>
+                                                            <Style TargetType="{x:Type ListBoxItem}" BasedOn="{StaticResource {x:Type ListBoxItem}}">
+                                                                <Setter Property="BorderThickness" Value="0"/>
+                                                            </Style>
+                                                        </ListBox.ItemContainerStyle>
+                                                        <ListBox.ItemTemplate>
+                                                            <DataTemplate>
+                                                                <DockPanel>
+                                                                    <Button DockPanel.Dock="Right" 
+                                                                            Visibility="{Binding IsMouseOver, RelativeSource={RelativeSource AncestorType={x:Type ListBoxItem}}, Converter={x:Static c:BoolToVisibilityConverter.BoolToVisibleOrCollapsed}}"
+                                                                            Command="{Binding DataContext.RemoveInnerClassCommand, Mode=OneTime, RelativeSource={RelativeSource AncestorType={x:Type ListBox}}}"
+                                                                            CommandParameter="{Binding}" Content="X" Width="20"
+                                                                            BorderBrush="Transparent" BorderThickness="0" attached:CornerRadiusHelper.Value="2"
+                                                                            Style="{StaticResource AccentToneMouseOverButton}">
+                                                                    </Button>
+                                                                    <TextBlock Text="{Binding InnerName}" Padding="2"/>
+                                                                </DockPanel>
+                                                            </DataTemplate>
+                                                        </ListBox.ItemTemplate>
+                                                    </ListBox>
+                                                </GroupBox>
+                                                <GroupBox IsEnabled="{Binding Converter={x:Static c:NullToBoolConverter.ToFalse}}" Grid.Column="2" Style="{StaticResource SquaredGroupBox}" Margin="0,0,5,5">
+                                                    <GroupBox.Header>
+                                                        <TextBlock Text="{Binding SelectedInnerClasses.Count, StringFormat='Inner Classes ({0} selected)', FallbackValue='Inner Classes'}" Padding="5,2" VerticalAlignment="Center"/>
+                                                    </GroupBox.Header>
+                                                    <Grid>
+                                                        <pe:PropertyEditor EditorRegistry="{x:Static innerClasses:InnerClassPropertyEditorRegistry.Instance}" InputItems="{Binding SelectedInnerClasses, Mode=OneTime}">
+                                                            <pe:PropertyEditor.Resources>
+                                                                <DataTemplate DataType="{x:Type innerClasses:InnerClassPropertyEditorViewModel}">
+                                                                    <Grid>
+                                                                        <TextBlock Width="140" HorizontalAlignment="Left" TextWrapping="NoWrap" Text="Full Inner Class Name" VerticalAlignment="Top" Padding="5"  FontWeight="Bold" Margin="0,1,0,0"/>
+                                                                        <TextBox Foreground="{StaticResource ClassName}" Text="{Binding InnerClassName, UpdateSourceTrigger=PropertyChanged, FallbackValue='&lt;select an inner class&gt;'}" Padding="5" VerticalAlignment="Top" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Height="28" Margin="140,0,0,0" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                                                        <TextBlock Width="140" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5"  FontWeight="Bold" Margin="0,32,0,0" Text="Full Outer Class Name"/>
+                                                                        <TextBox Foreground="{StaticResource ClassName}" Text="{Binding OuterClassName, UpdateSourceTrigger=PropertyChanged, FallbackValue='&lt;select an inner class&gt;'}" Padding="5" VerticalAlignment="Top" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Height="28" Margin="140,31,0,0" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone5.Background.Static}"/>
+                                                                        <TextBlock Width="140" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5"  FontWeight="Bold" Margin="0,62,0,0" Text="Inner class Access"/>
+                                                                        <DockPanel Margin="0,61,0,0">
+                                                                            <TextBox Foreground="{StaticResource ConstEnum}" IsReadOnly="True" Text="{Binding ClassAccess, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource EnumToString}}" Padding="5" VerticalAlignment="Top" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Height="28" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}"/>
+                                                                        </DockPanel>
+                                                                    </Grid>
+                                                                </DataTemplate>
+                                                            </pe:PropertyEditor.Resources>
+                                                        </pe:PropertyEditor>
+                                                    </Grid>
+                                                </GroupBox>
+                                                <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" Background="Transparent" Margin="-5,0"/>
+                                            </Grid>
+                                        </TabItem>
+                                        <TabItem DataContext="{Binding Class.ClassAttributes, Mode=OneTime}">
+                                            <TabItem.Header>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="Enclosing Method" VerticalAlignment="Center"/>
+                                                    <CheckBox Margin="5 0 0 0" Content="Use" IsChecked="{Binding IsEnabledEnclosingMethod}" Width="42"/>
+                                                </StackPanel>
+                                            </TabItem.Header>
+                                            <Grid IsEnabled="{Binding IsEnabledEnclosingMethod}">
+                                                <Grid DataContext="{Binding EnclosingMethod}">
+                                                    <TextBlock Width="125" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" ToolTip="The name of this method (duh)"><Run Text="Outer Class"/><Run Text=" Name"/></TextBlock>
+                                                    <TextBlock Text="Outer Method name" Width="125" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" ToolTip="The name of this method (duh)" Margin="0,28,0,0"/>
+                                                    <TextBlock Text="Descriptor" Width="125" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,57,0,0" ToolTip="The method's descriptor, which shows the method parameters and return type"/>
+                                                    <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource ClassName}" Text="{Binding ClassName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,0,0,0" FontWeight="Bold" FontFamily="Consolas" Height="26"/>
+                                                    <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource MethodName}" Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,28,0,0" FontWeight="Bold" FontFamily="Consolas"  FontStyle="Italic" Height="26"/>
+                                                    <TextBox BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Background="{DynamicResource ABrush.Tone2.Background.Static}" Foreground="{StaticResource MethodDescriptor}" Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="130,56,100,0" FontWeight="Bold" />
+                                                </Grid>
+                                            </Grid>
+                                        </TabItem>
+                                    </TabControl>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Padding="12,3" DataContext="{Binding FieldList, Mode=OneTime}">
+                                <TabItem.Header>
+                                    <TextBlock Text="{Binding Fields.Count, StringFormat='Fields ({0})', FallbackValue='Fields'}"/>
+                                </TabItem.Header>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="200*"/>
+                                        <ColumnDefinition Width="7"/>
+                                        <ColumnDefinition Width="600*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <DockPanel Margin="0,0,5,0" Grid.ColumnSpan="2">
+                                        <DockPanel DockPanel.Dock="Top" Margin="0,-1,0,0">
+                                            <Button DockPanel.Dock="Right" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource PanelBorderBrush}" Content="Search" HorizontalAlignment="Right" Width="58" Height="24" VerticalAlignment="Bottom" Margin="0" Background="{DynamicResource ABrush.Tone6.Background.Static}"/>
+                                            <TextBox Style="{DynamicResource HintedTextBox}" Tag="Search for a method" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" VerticalAlignment="Bottom" Height="24" BorderBrush="{DynamicResource PanelBorderBrush}" Background="{DynamicResource ABrush.Tone4.Background.Static}">
+                                                <TextBox.InputBindings>
+                                                    <KeyBinding Key="Enter"/>
+                                                    <KeyBinding Key="Esc"/>
+                                                </TextBox.InputBindings>
+                                            </TextBox>
+                                        </DockPanel>
+                                        <ListBox ItemsSource="{Binding Fields}" x:Name="FieldList"
+                                                 BorderThickness="1,0"
+                                                 SelectionMode="Extended"
+                                                 HorizontalContentAlignment="Stretch"
+                                                 Background="{DynamicResource ABrush.Tone5.Background.Static}"
+                                                 BorderBrush="{DynamicResource PanelBorderBrush}" 
+                                                 SelectedItem="{Binding SelectedField}"
+                                                 SelectedIndex="{Binding SelectedIndex}"
+                                                 ap:HorizontalScrolling.UseHorizontalScrolling="True">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <controls1:FieldInfoControl DataContext="{Binding}"/>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </DockPanel>
+                                    <Border Grid.Column="1" Grid.ColumnSpan="2" Margin="5,0,0,0">
+                                        <Grid DataContext="{Binding SelectedField}">
+                                            <TextBlock Text="Field Name" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" ToolTip="The name of this field (duh)"/>
+                                            <TextBlock Text="Descriptor" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,26,0,0" ToolTip="The field's descriptor, which shows what type the field holds"/>
+                                            <TextBlock Text="Signature" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,52,0,0" ToolTip="The field's signature, which is similar to the descriptor but also contains generic types too (e.g for an ArrayList element types)"/>
+                                            <TextBlock Text="Access Flags" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,78,0,0"/>
+                                            <TextBlock Text="Constant Value" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,104,0,0"/>
+                                            <TextBox Foreground="{StaticResource FieldName}" Background="Transparent" Text="{Binding FieldName, UpdateSourceTrigger=PropertyChanged}"           HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,0,0,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas" Height="26"/>
+                                            <TextBox Foreground="{StaticResource FieldDescriptor}" Background="Transparent" Text="{Binding FieldDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,26,110,0" BorderThickness="0"  FontWeight="Bold" FontStyle="Italic" FontFamily="Consolas"  Height="26"/>
+                                            <TextBox Foreground="{StaticResource FieldDescriptor}" Background="Transparent" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}"           HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,52,0,0" BorderThickness="0"  FontWeight="Bold" FontStyle="Italic"  FontFamily="Consolas" Height="26"/>
+                                            <TextBox Foreground="{StaticResource ConstEnum}" Background="Transparent" Text="{Binding Access, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource EnumToString}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,78,110,0" BorderThickness="0"  FontWeight="Bold" />
+                                            <TextBox Foreground="{StaticResource ConstNumeric}" Background="Transparent" Text="{Binding ConstantValue, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,104,173,0" BorderThickness="0"  FontWeight="Bold" />
+                                            <!--
+                                            <Button Command="{Binding EditFieldDescriptorCommand}" Margin="0,27,3,0" Content="Edit Descriptor" Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
+                                            <Button Command="{Binding EditAccessCommand}"          Margin="0,79,3,0" Content="Edit Access"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
+                                            <Button Command="{Binding EditConstValueCommand}"      Margin="0,105,3,0" Content="Edit Value"     Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="102"/>
+                                            <Button Command="{Binding SetConstValueNullCommand}"   Margin="0,105,107,0" Content="Clear"        Height="24" VerticalAlignment="Top" HorizontalAlignment="Right" Width="64"/>
+                                            -->
+                                            <TabControl Margin="3,135,5,5" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
+                                                <TabItem Padding="12,4">
+                                                    <TabItem.Header>
+                                                        <StackPanel Orientation="Horizontal" ToolTip="Annotations that are kept during runtime">
+                                                            <TextBlock Text="Visible Annotations"/>
+                                                            <TextBlock Text="{Binding VisibleAnnotationEditor.Annotations.Count, StringFormat={}({0})}" Padding="2 0 0 0"/>
+                                                        </StackPanel>
+                                                    </TabItem.Header>
+                                                    <an1:AnnotationEditorControl DataContext="{Binding VisibleAnnotationEditor}"/>
+                                                </TabItem>
+                                                <TabItem Padding="12,4">
+                                                    <TabItem.Header>
+                                                        <StackPanel Orientation="Horizontal" ToolTip="Annotations that are stored in the class file, but are not kept during runtime">
+                                                            <TextBlock Text="Hidden Annotations"/>
+                                                            <TextBlock Text="{Binding InvisibleAnnotationEditor.Annotations.Count, StringFormat={}({0})}" Padding="2 0 0 0"/>
+                                                        </StackPanel>
+                                                    </TabItem.Header>
+                                                    <an1:AnnotationEditorControl DataContext="{Binding InvisibleAnnotationEditor}"/>
+                                                </TabItem>
+                                            </TabControl>
+                                        </Grid>
+                                    </Border>
+                                    <GridSplitter Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Column="1" BorderThickness="0 0 0 0"/>
+                                </Grid>
+                            </TabItem>
+                            <TabItem Padding="12,3" DataContext="{Binding MethodList, Mode=OneTime}">
+                                <TabItem.Header>
+                                    <TextBlock Text="{Binding Methods.Count, StringFormat='Methods ({0})', FallbackValue='Methods'}" Padding="2"/>
+                                </TabItem.Header>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="2*"/>
+                                        <ColumnDefinition Width="1"/>
+                                        <ColumnDefinition Width="6*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <DockPanel>
+                                        <DockPanel DockPanel.Dock="Top" Margin="0,-1,0,0">
+                                            <Button DockPanel.Dock="Right" BorderThickness="0,1,1,1" BorderBrush="{DynamicResource PanelBorderBrush}" Content="Search" HorizontalAlignment="Right" Width="58" Height="24" VerticalAlignment="Bottom" Margin="0" Background="{DynamicResource ABrush.Tone6.Background.Static}"/>
+                                            <TextBox Style="{DynamicResource HintedTextBox}" Tag="Search for a method" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" VerticalAlignment="Bottom" Height="24" BorderBrush="{DynamicResource PanelBorderBrush}" Background="{DynamicResource ABrush.Tone4.Background.Static}">
+                                                <TextBox.InputBindings>
+                                                    <KeyBinding Key="Enter"/>
+                                                    <KeyBinding Key="Esc"/>
+                                                </TextBox.InputBindings>
+                                            </TextBox>
+                                        </DockPanel>
+                                        <ListBox ItemsSource="{Binding Methods}" x:Name="MethodList"
+                                                 BorderThickness="1,0"
+                                                 SelectionMode="Extended"
+                                                 HorizontalContentAlignment="Stretch"
+                                                 Background="{DynamicResource ABrush.Tone5.Background.Static}"
+                                                 BorderBrush="{DynamicResource PanelBorderBrush}" 
+                                                 SelectedItem="{Binding SelectedMethod}"
+                                                 SelectedIndex="{Binding SelectedIndex}"
+                                                 ap:HorizontalScrolling.UseHorizontalScrolling="True">
+                                            <ListBox.ItemTemplate>
+                                                <DataTemplate>
+                                                    <controls1:MethodInfoControl DataContext="{Binding}"/>
+                                                </DataTemplate>
+                                            </ListBox.ItemTemplate>
+                                        </ListBox>
+                                    </DockPanel>
+                                    <Border BorderThickness="0" Grid.Column="1" Grid.ColumnSpan="2" Margin="0">
+                                        <TabControl DataContext="{Binding SelectedMethod, UpdateSourceTrigger=PropertyChanged}" 
+                                                    Background="{DynamicResource ABrush.Tone3.Background.Static}" 
+                                                    BorderBrush="{DynamicResource PanelBorderBrush}"
+                                                    BorderThickness="0,1,0,0" Margin="0,-1,0,0">
+                                            <TabItem Header="General Method Information" Style="{StaticResource NoLeftBorder}" Padding="12,4">
+                                                <Grid>
+                                                    <TextBlock Text="Method Name" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" ToolTip="The name of this method (duh)"/>
+                                                    <TextBlock Text="Descriptor" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,26,0,0" ToolTip="The method's descriptor, which shows the method parameters and return type"/>
+                                                    <TextBlock Text="Signature" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,52,0,0" ToolTip="The method's signature, which is similar to the descriptor but also contains generic types too (e.g for an ArrayList element types)"/>
+                                                    <TextBlock Text="Access Flags" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,78,0,0"/>
+                                                    <TextBlock Text="Max Stack Size" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,104,0,0" ToolTip="The maximum number of element on the method's operand stack at one time"/>
+                                                    <TextBlock Text="Max Local Vars" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,130,0,0" ToolTip="The maximum number of local variables the method has ('this' (if non-static), parameters and local variables, and possibly others?)"/>
+                                                    <TextBlock Text="Instructions" Width="100" HorizontalAlignment="Left" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" FontWeight="Bold" Margin="0,156,0,0" ToolTip="The number of instruction nodes this method has"/>
+                                                    <TextBox Foreground="{StaticResource MethodName}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding MethodName, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,0,0,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas" Height="26"/>
+                                                    <TextBox Foreground="{StaticResource MethodDescriptor}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,26,100,0" BorderThickness="0"  FontWeight="Bold" FontFamily="Consolas"  FontStyle="Italic" Height="26"/>
+                                                    <TextBox Foreground="{StaticResource MethodDescriptor}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,52,0,0" BorderThickness="0"  FontWeight="Bold"  FontFamily="Consolas" FontStyle="Italic" Height="26"/>
+                                                    <TextBox Foreground="{StaticResource ConstEnum}" Background="Transparent" VerticalContentAlignment="Center" Text="{Binding Access, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource EnumToString}}" IsReadOnly="True" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,78,100,0" BorderThickness="0"  FontWeight="Bold" />
+                                                    <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding MaxStack, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,104,0,0" BorderThickness="0"  FontWeight="Bold" Height="26"/>
+                                                    <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding MaxLocals, UpdateSourceTrigger=PropertyChanged}" HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,130,0,0" BorderThickness="0"  FontWeight="Bold" Height="26"/>
+                                                    <TextBox Background="Transparent" VerticalContentAlignment="Center" Foreground="{DynamicResource ABrush.Foreground.Deeper}" Text="{Binding CodeEditor.ByteCodeEditor.Instructions.Count, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}" IsReadOnly="True"   HorizontalAlignment="Stretch" TextWrapping="NoWrap" VerticalAlignment="Top" Padding="5" Margin="100,156,0,0" BorderThickness="0"  FontWeight="Bold" />
+                                                    <TabControl Margin="3,135,5,5" TabStripPlacement="Top" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone3.Border.Static}">
+                                                        <TabItem Padding="12,4">
+                                                            <TabItem.Header>
+                                                                <StackPanel Orientation="Horizontal" ToolTip="Annotations that are kept during runtime">
+                                                                    <TextBlock Text="Visible Annotations"/>
+                                                                    <TextBlock Text="{Binding VisibleAnnotationEditor.Annotations.Count, StringFormat={}({0})}" Padding="2 0 0 0"/>
+                                                                </StackPanel>
+                                                            </TabItem.Header>
+                                                            <an1:AnnotationEditorControl DataContext="{Binding VisibleAnnotationEditor}"/>
+                                                        </TabItem>
+                                                        <TabItem Padding="12,4">
+                                                            <TabItem.Header>
+                                                                <StackPanel Orientation="Horizontal" ToolTip="Annotations that are stored in the class file, but are not kept during runtime">
+                                                                    <TextBlock Text="Hidden Annotations"/>
+                                                                    <TextBlock Text="{Binding InvisibleAnnotationEditor.Annotations.Count, StringFormat={}({0})}" Padding="2 0 0 0"/>
+                                                                </StackPanel>
+                                                            </TabItem.Header>
+                                                            <an1:AnnotationEditorControl DataContext="{Binding InvisibleAnnotationEditor}"/>
+                                                        </TabItem>
+                                                    </TabControl>
+                                                </Grid>
+                                            </TabItem>
+                                            <TabItem Header="Bytecode Editor" Padding="12,4">
+                                                <Grid DataContext="{Binding CodeEditor}">
+                                                    <TabControl BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="1">
+                                                        <TabItem Header="Bytecode Editor" DataContext="{Binding ByteCodeEditor}">
+                                                            <Grid Margin="1">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="36*"/>
+                                                                    <RowDefinition Height="10"/>
+                                                                    <RowDefinition Height="16*"/>
+                                                                </Grid.RowDefinitions>
+                                                                <Grid VerticalAlignment="Top" Height="22">
+                                                                    <Button Content="Insert New Instruction Above Selection" Command="{Binding InsertInstructionCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Left" Width="225"/>
+                                                                    <Button Content="Insert Label" Command="{Binding InsertLabelCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Left" Width="80" Margin="228,0,0,0"/>
+                                                                    <Button Content="↑" Command="{Binding MoveSelectedInstructionUpCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Right" Width="22" Margin="0,0,25,0"/>
+                                                                    <Button Content="↓" Command="{Binding MoveSelectedInstructionDownCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Right" Width="22"/>
+                                                                    <Button Content="↑" Command="{Binding MoveSelectedInstructionUpCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Right" Width="22" Margin="0,0,25,0"/>
+                                                                    <Button Content="Paste Above" Command="{Binding PasteCodeAboveCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Right" Width="90" Margin="0,0,50,0"/>
+                                                                    <Button Content="Copy" ToolTip="Copy your selected instructions. These can be pasted into any method, including different classes" Command="{Binding CopyCodeCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Right" Width="75" Margin="0,0,236,0"/>
+                                                                    <Button Content="Paste Below" Command="{Binding PasteCodeBelowCommand}" Padding="5 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" HorizontalAlignment="Right" Width="90" Margin="0,0,143,0"/>
+                                                                </Grid>
+                                                                <ListBox Grid.Row="0"
+                                                                         ItemsSource="{Binding Instructions}"
+                                                                         SelectedItem="{Binding SelectedInstruction, UpdateSourceTrigger=PropertyChanged}"
+                                                                         SelectedIndex="{Binding SelectedInstructionIndex, UpdateSourceTrigger=PropertyChanged}"
+                                                                         FontFamily="Consolas" Margin="0,24,0,27"
+                                                                         SelectionMode="Extended"
+                                                                         x:Name="BytecodeEditorListBox"
+                                                                         AllowDrop="True"
+                                                                         Background="{DynamicResource ABrush.Tone2.Background.Static}"
+                                                                         BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
+                                                                         ap:HorizontalScrolling.UseHorizontalScrolling="True">
+                                                                    <ListBox.ItemContainerStyle>
+                                                                        <Style TargetType="{x:Type ListBoxItem}">
+                                                                            <Setter Property="SnapsToDevicePixels" Value="True" />
+                                                                            <Setter Property="Padding" Value="0" />
+                                                                            <Setter Property="HorizontalContentAlignment" Value="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+                                                                            <Setter Property="VerticalContentAlignment" Value="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type ItemsControl}}}" />
+                                                                            <Setter Property="Background" Value="Transparent" />
+                                                                            <Setter Property="BorderBrush" Value="Transparent" />
+                                                                            <Setter Property="BorderThickness" Value="1" />
+                                                                            <Setter Property="IsEnabled" Value="{Binding IsEnabled, UpdateSourceTrigger=PropertyChanged, FallbackValue=True}" />
+                                                                            <Setter Property="FocusVisualStyle" Value="{StaticResource FocusVisual}" />
+                                                                            <Setter Property="Template">
+                                                                                <Setter.Value>
+                                                                                    <ControlTemplate TargetType="{x:Type ListBoxItem}">
+                                                                                        <Border x:Name="Bd" BorderBrush="{TemplateBinding BorderBrush}" 
+                                                                                                BorderThickness="{TemplateBinding BorderThickness}" 
+                                                                                                Background="{TemplateBinding Background}" 
+                                                                                                Padding="4,1" SnapsToDevicePixels="true">
+                                                                                            <Grid>
+                                                                                                <TextBlock HorizontalAlignment="Left" Text="{Binding InstructionIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                                <ContentPresenter Margin="27 0 0 0" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                                                            </Grid>
+                                                                                            <!--
+                                                                                    <ContentPresenter HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                                                                                    -->
+                                                                                        </Border>
+                                                                                        <ControlTemplate.Triggers>
+                                                                                            <DataTrigger Binding="{Binding IsNewInstruction, UpdateSourceTrigger=PropertyChanged}" Value="True">
+                                                                                                <Setter Property="Background" Value="{DynamicResource NewInstructionBackground}"/>
+                                                                                            </DataTrigger>
+                                                                                            <MultiTrigger>
+                                                                                                <MultiTrigger.Conditions>
+                                                                                                    <Condition Property="IsMouseOver" Value="True" />
+                                                                                                </MultiTrigger.Conditions>
+                                                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource Item.MouseOver.Background}" />
+                                                                                                <Setter Property="BorderBrush" TargetName="Bd" Value="{DynamicResource Item.MouseOver.Border}" />
+                                                                                            </MultiTrigger>
+                                                                                            <MultiTrigger>
+                                                                                                <MultiTrigger.Conditions>
+                                                                                                    <Condition Property="Selector.IsSelectionActive" Value="False" />
+                                                                                                    <Condition Property="IsSelected" Value="True" />
+                                                                                                </MultiTrigger.Conditions>
+                                                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource Item.SelectedInactive.Background}" />
+                                                                                                <Setter Property="BorderBrush" TargetName="Bd" Value="{DynamicResource Item.SelectedInactive.Border}" />
+                                                                                            </MultiTrigger>
+                                                                                            <MultiTrigger>
+                                                                                                <MultiTrigger.Conditions>
+                                                                                                    <Condition Property="Selector.IsSelectionActive" Value="True" />
+                                                                                                    <Condition Property="IsSelected" Value="True" />
+                                                                                                </MultiTrigger.Conditions>
+                                                                                                <Setter Property="Background" TargetName="Bd" Value="{DynamicResource Item.SelectedActive.Background}" />
+                                                                                                <Setter Property="BorderBrush" TargetName="Bd" Value="{DynamicResource Item.SelectedActive.Border}" />
+                                                                                            </MultiTrigger>
+                                                                                            <Trigger Property="IsEnabled" Value="False">
+                                                                                                <Setter Property="TextElement.Foreground" TargetName="Bd" Value="{DynamicResource ABrush.Foreground.Disabled}" />
+                                                                                            </Trigger>
+                                                                                        </ControlTemplate.Triggers>
+                                                                                    </ControlTemplate>
+                                                                                </Setter.Value>
+                                                                            </Setter>
+                                                                        </Style>
+                                                                    </ListBox.ItemContainerStyle>
+                                                                    <ListBox.Resources>
+                                                                        <DataTemplate DataType="{x:Type instructions:FieldInstructionViewModel}">
+                                                                            <listControls:FieldInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:IncrementInstructionViewModel}">
+                                                                            <listControls:IncrementInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:IntegerPushInstructionViewModel}">
+                                                                            <listControls:IntegerPushInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:InvokeDynamicInstructionViewModel}">
+                                                                            <listControls:InvokeDynamicInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:JumpInstructionViewModel}">
+                                                                            <listControls:JumpInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:LabelViewModel}">
+                                                                            <listControls:LabelControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:LdcInstructionViewModel}">
+                                                                            <listControls:LdcInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:LineNumberViewModel}">
+                                                                            <listControls:LineNumberControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:LookupSwitchInstructionViewModel}">
+                                                                            <listControls:LookupSwitchInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:MethodInstructionViewModel}">
+                                                                            <listControls:MethodInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:MultiANewArrayInstructionViewModel}">
+                                                                            <listControls:MultiANewArrayInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:NewArrayInstructionViewModel}">
+                                                                            <listControls:NewArrayInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:SimpleInstructionViewModel}">
+                                                                            <listControls:SimpleInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:StackMapFrameViewModel}">
+                                                                            <listControls:StackMapFrameControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:TableSwitchInstructionViewModel}">
+                                                                            <listControls:TableSwitchInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:TypeInstructionViewModel}">
+                                                                            <listControls:TypeInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                        <DataTemplate DataType="{x:Type instructions:VariableInstructionViewModel}">
+                                                                            <listControls:VariableInstructionControl DataContext="{Binding}"/>
+                                                                        </DataTemplate>
+                                                                    </ListBox.Resources>
+                                                                </ListBox>
+                                                                <TextBox Grid.Row="0" Style="{DynamicResource HintedTextBox}" Tag="Search for anything in this instruction list" AutoWordSelection="False" ToolTip="Searches the instructions for the given string of text" VerticalContentAlignment="Center" Padding="3 1" VerticalAlignment="Bottom" Height="24" Margin="-3,0,60,0" BorderThickness="0 1 0 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" >
+                                                                    <TextBox.InputBindings>
+                                                                        <KeyBinding Key="Enter"/>
+                                                                        <KeyBinding Key="Esc"/>
+                                                                    </TextBox.InputBindings>
+                                                                </TextBox>
+                                                                <Button Grid.Row="0" VerticalAlignment="Bottom" Height="24" Margin="0,0,-3,0" BorderThickness="1 1 0 1" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Content="Search" HorizontalAlignment="Right" Width="65"/>
+                                                                <Border Grid.Row="2" Background="{DynamicResource ABrush.Tone4.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone4.Border.Static}" BorderThickness="0 0 0 0">
+                                                                    <GroupBox DataContext="{Binding SelectedInstruction, UpdateSourceTrigger=PropertyChanged}" Style="{DynamicResource SquaredGroupBox}" Background="{DynamicResource ABrush.Tone3.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="0,-6,0,0">
+                                                                        <GroupBox.Header>
+                                                                            <DockPanel HorizontalAlignment="Stretch">
+                                                                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" TextWrapping="NoWrap" Text="Instruction Information" Padding="5"  FontWeight="Bold" Margin="0 -1 0 0"/>
+                                                                                <Border Margin="2,0" HorizontalAlignment="Left" Height="20" Width="1" Background="{DynamicResource ABrush.Tone7.Background.Static}"/>
+                                                                                <TextBlock HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Opcode, UpdateSourceTrigger=PropertyChanged, StringFormat={}Opcode: {0}}" 
+                                                                                           Background="Transparent" TextWrapping="NoWrap" Padding="5" FontWeight="Bold" FontStyle="Italic"  Margin="0,2,0,3">
+                                                                                    <TextBlock.InputBindings>
+                                                                                        <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditOpcodeCommand}"/>
+                                                                                    </TextBlock.InputBindings>
+                                                                                </TextBlock>
+                                                                                <Button IsEnabled="{Binding CanEditOpCode}" Command="{Binding EditOpcodeCommand}" Focusable="False" HorizontalAlignment="Right" VerticalAlignment="Center" Width="75" Height="22" Content="Change" Margin="0,4,0,5" Background="{DynamicResource ABrush.Tone6.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
+                                                                            </DockPanel>
+                                                                        </GroupBox.Header>
+                                                                        <ScrollViewer Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                                              Margin="-4 -3 -4 -5" 
+                                                                              CanContentScroll="False"
+                                                                              ap:HorizontalScrolling.UseHorizontalScrolling="True"
+                                                                              HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                                                                            <ContentPresenter Content="{Binding}" Margin="4">
+                                                                                <ContentPresenter.Resources>
+                                                                                    <DataTemplate DataType="{x:Type instructions:FieldInstructionViewModel}">
+                                                                                        <editorControls:FieldInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:IntegerPushInstructionViewModel}">
+                                                                                        <editorControls:IntegerPushInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:InvokeDynamicInstructionViewModel}">
+                                                                                        <editorControls:InvokeDynamicInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:LdcInstructionViewModel}">
+                                                                                        <editorControls:LdcInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:LineNumberViewModel}">
+                                                                                        <editorControls:LineNumberEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:MethodInstructionViewModel}">
+                                                                                        <editorControls:MethodInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:MultiANewArrayInstructionViewModel}">
+                                                                                        <editorControls:MultiANewArrayInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:NewArrayInstructionViewModel}">
+                                                                                        <editorControls:NewArrayInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:SimpleInstructionViewModel}">
+                                                                                        <editorControls:SimpleInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:IncrementInstructionViewModel}">
+                                                                                        <editorControls:IncrementInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:JumpInstructionViewModel}">
+                                                                                        <editorControls:JumpInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:LabelViewModel}">
+                                                                                        <editorControls:LabelEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:LookupSwitchInstructionViewModel}">
+                                                                                        <editorControls:LookupSwitchInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:StackMapFrameViewModel}">
+                                                                                        <editorControls:StackMapFrameEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:TableSwitchInstructionViewModel}">
+                                                                                        <editorControls:TableSwitchInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:TypeInstructionViewModel}">
+                                                                                        <editorControls:TypeInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:VariableInstructionViewModel}">
+                                                                                        <editorControls:VariableInstructionEditorControl DataContext="{Binding}"/>
+                                                                                    </DataTemplate>
+                                                                                    <DataTemplate DataType="{x:Type instructions:BaseInstructionViewModel}">
+                                                                                        <Grid/>
+                                                                                    </DataTemplate>
+                                                                                </ContentPresenter.Resources>
+                                                                            </ContentPresenter>
+                                                                        </ScrollViewer>
+                                                                    </GroupBox>
+                                                                </Border>
+                                                                <GridSplitter HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Grid.Row="1" BorderThickness="0" Background="Transparent"/>
+                                                            </Grid>
+                                                        </TabItem>
+                                                        <TabItem Header="Exceptions" DataContext="{Binding ExceptionEditor}">
+                                                            <ListView ItemsSource="{Binding TryCatchBlocks}" 
+                                                      Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                      BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
+                                                      ap:HorizontalScrolling.UseHorizontalScrolling="True">
+                                                                <ListView.View>
+                                                                    <GridView>
+                                                                        <GridView.Columns>
+                                                                            <GridViewColumn Header="Start" Width="100"          DisplayMemberBinding="{Binding StartIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                            <GridViewColumn Header="End" Width="100"            DisplayMemberBinding="{Binding EndIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                            <GridViewColumn Header="Handler" Width="100"        DisplayMemberBinding="{Binding HandlerIndex, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                            <GridViewColumn Header="Exception Type" Width="400">
+                                                                                <GridViewColumn.CellTemplate>
+                                                                                    <DataTemplate>
+                                                                                        <Grid>
+                                                                                            <controls1:DoubleClickEditBox Visibility="{Binding IsFinallyBlock, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource VisibilityConverter}, ConverterParameter=Invert}" d:DataContext="{d:DesignInstance exceptionTable:TryCatchBlockViewModel}" Text="{Binding HandlerType, UpdateSourceTrigger=PropertyChanged}" FontFamily="Consolas" Foreground="{DynamicResource ClassName}"/>
+                                                                                            <TextBlock Visibility="{Binding IsFinallyBlock, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource VisibilityConverter}}" d:DataContext="{d:DesignInstance exceptionTable:TryCatchBlockViewModel}" Text="[Finally Block]" Foreground="{DynamicResource ConstNumeric}" FontFamily="Consolas"/>
+                                                                                        </Grid>
+                                                                                    </DataTemplate>
+                                                                                </GridViewColumn.CellTemplate>
+                                                                            </GridViewColumn>
+                                                                        </GridView.Columns>
+                                                                    </GridView>
+                                                                </ListView.View>
+                                                            </ListView>
+                                                        </TabItem>
+                                                        <TabItem Header="Local Variables" DataContext="{Binding LocalVariableTable}">
+                                                            <Grid>
+                                                                <Button Command="{Binding AddLVTEntryCommand}" Content="Add LVT Entry" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
+                                                                <Button Command="{Binding RemoveSelectedEntryCommand}" Content="Remove Selected Entry" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="102,0,0,0"/>
+                                                                <Button Command="{Binding ClearLVTCommand}" Content="Clear LVT" VerticalAlignment="Top" HorizontalAlignment="Right" Width="85" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
+                                                                <ListView ItemsSource="{Binding LocalVariables}" SelectedItem="{Binding SelectedEntry, UpdateSourceTrigger=PropertyChanged}"
+                                                                  Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                                  BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
+                                                                  ap:HorizontalScrolling.UseHorizontalScrolling="True" Margin="0,26,0,0">
+                                                                    <ListView.View>
+                                                                        <GridView>
+                                                                            <GridView.Columns>
+                                                                                <GridViewColumn Header="Index" Width="75" DisplayMemberBinding="{Binding Index, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                <GridViewColumn Header="Start PC" Width="75" DisplayMemberBinding="{Binding StartPC, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                <GridViewColumn Header="Length" Width="75" DisplayMemberBinding="{Binding Length, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                <GridViewColumn Header="Variable Name" Width="175">
+                                                                                    <GridViewColumn.CellTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <controls1:DoubleClickEditBox Foreground="{DynamicResource Keyword}" DataContext="{Binding}" Text="{Binding VariableName, UpdateSourceTrigger=PropertyChanged}" d:DataContext="{d:DesignInstance locals:LocalVariableViewModel}"/>
+                                                                                        </DataTemplate>
+                                                                                    </GridViewColumn.CellTemplate>
+                                                                                </GridViewColumn>
+                                                                                <GridViewColumn Header="Descriptor" Width="350">
+                                                                                    <GridViewColumn.CellTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <controls1:DoubleClickEditBox Foreground="{DynamicResource ClassName}" DataContext="{Binding}" Text="{Binding Descriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}" d:DataContext="{d:DesignInstance locals:LocalVariableViewModel}"/>
+                                                                                        </DataTemplate>
+                                                                                    </GridViewColumn.CellTemplate>
+                                                                                </GridViewColumn>
+                                                                            </GridView.Columns>
+                                                                        </GridView>
+                                                                    </ListView.View>
+                                                                </ListView>
+                                                            </Grid>
+                                                        </TabItem>
+                                                        <TabItem Header="Local Variable Signatures" DataContext="{Binding LocalVariableTypeTable}">
+                                                            <Grid>
+                                                                <Button Command="{Binding AddLVTEntryCommand}" Content="Add LVT Entry" VerticalAlignment="Top" HorizontalAlignment="Left" Width="100" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
+                                                                <Button Command="{Binding RemoveSelectedEntryCommand}" Content="Remove Selected Entry" VerticalAlignment="Top" HorizontalAlignment="Left" Width="145" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" Margin="102,0,0,0"/>
+                                                                <Button Command="{Binding ClearLVTCommand}" Content="Clear LVT" VerticalAlignment="Top" HorizontalAlignment="Right" Width="85" Height="24" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"/>
+                                                                <ListView ItemsSource="{Binding LocalVariables}" SelectedItem="{Binding SelectedEntry, UpdateSourceTrigger=PropertyChanged}"
+                                                                  Background="{DynamicResource ABrush.Tone3.Background.Static}"
+                                                                  BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}"
+                                                                  ap:HorizontalScrolling.UseHorizontalScrolling="True" Margin="0,26,0,0">
+                                                                    <ListView.View>
+                                                                        <GridView>
+                                                                            <GridView.Columns>
+                                                                                <GridViewColumn Header="Index" Width="75" DisplayMemberBinding="{Binding Index, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                <GridViewColumn Header="Start PC" Width="75" DisplayMemberBinding="{Binding StartPC, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                <GridViewColumn Header="Length" Width="75" DisplayMemberBinding="{Binding Length, UpdateSourceTrigger=PropertyChanged}"/>
+                                                                                <GridViewColumn Header="Variable Name" Width="175">
+                                                                                    <GridViewColumn.CellTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <controls1:DoubleClickEditBox Foreground="{DynamicResource Keyword}" DataContext="{Binding}" Text="{Binding VariableName, UpdateSourceTrigger=PropertyChanged}" d:DataContext="{d:DesignInstance locals:LocalVariableTypeViewModel}"/>
+                                                                                        </DataTemplate>
+                                                                                    </GridViewColumn.CellTemplate>
+                                                                                </GridViewColumn>
+                                                                                <GridViewColumn Header="Signature" Width="350">
+                                                                                    <GridViewColumn.CellTemplate>
+                                                                                        <DataTemplate>
+                                                                                            <controls1:DoubleClickEditBox Foreground="{DynamicResource ClassName}" DataContext="{Binding}" Text="{Binding Signature, UpdateSourceTrigger=PropertyChanged}" d:DataContext="{d:DesignInstance locals:LocalVariableTypeViewModel}"/>
+                                                                                        </DataTemplate>
+                                                                                    </GridViewColumn.CellTemplate>
+                                                                                </GridViewColumn>
+                                                                            </GridView.Columns>
+                                                                        </GridView>
+                                                                    </ListView.View>
+                                                                </ListView>
+                                                            </Grid>
+                                                        </TabItem>
+                                                    </TabControl>
+                                                </Grid>
+                                            </TabItem>
+                                        </TabControl>
+                                    </Border>
+                                    <GridSplitter Background="Transparent" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" BorderThickness="0" BorderBrush="{DynamicResource ABrush.Tone7.Border.Static}" Grid.Column="1"/>
+                                </Grid>
+                            </TabItem>
+                        </TabControl>
+                    </Grid>
+                </DockPanel>
+            </Border>
+            <Border Grid.Column="1" Margin="0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                    Background="{DynamicResource ABrush.Tone5.Background.Static}" 
+                    BorderBrush="Transparent" BorderThickness="0"
+                    IsHitTestVisible="False"/>
+            <GridSplitter Grid.Column="1" Margin="-5,0" HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                          Background="Transparent" BorderBrush="Transparent" BorderThickness="0"
+                          ap:GridLatchSplitter.IsEnabled="True"
+                          ap:GridLatchSplitter.MinimumSize="250"
+                          ap:GridLatchSplitter.ThresholdSizeToClose="75"
+                          ap:GridLatchSplitter.ThresholdSizeToOpen="175"
+                          ap:GridLatchSplitter.TargetColumn="{Binding ElementName=TreeListColumn}"/>
+        </Grid>
+    </DockPanel>
+</views:WindowEx>

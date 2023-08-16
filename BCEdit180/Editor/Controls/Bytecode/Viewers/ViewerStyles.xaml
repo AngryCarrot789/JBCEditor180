@@ -1,0 +1,79 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                    xmlns:converters="clr-namespace:BCEdit180.Converters"
+                    xmlns:local="clr-namespace:BCEdit180.Editor.Controls.Bytecode.Viewers"
+                    xmlns:utils="clr-namespace:BCEdit180.Core.Editor.Classes.Utils;assembly=BCEdit180.Core"
+                    xmlns:descriptors="clr-namespace:BCEdit180.Core.Editor.Classes.Descriptors;assembly=BCEdit180.Core"
+                    mc:Ignorable="d">
+    <converters:TypeDescriptorToStringConverter x:Key="TypeConverter"/>
+
+    <Style TargetType="{x:Type local:MethodDescriptorControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid d:DataContext="{d:DesignInstance utils:MethodDescriptorViewModel}">
+                        <TextBox Foreground="{StaticResource MethodDescriptor}"
+                                 Text="{Binding MethodDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}"
+                                 VerticalContentAlignment="Center"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="5"
+                                 TextWrapping="NoWrap"
+                                 FontWeight="Bold"
+                                 FontFamily="Consolas"
+                                 FontStyle="Italic" Margin="0,0,100,0" MinHeight="26"/>
+                        <Button Command="{Binding EditMethodDescriptorCommand,  UpdateSourceTrigger=PropertyChanged}" Content="Edit Descriptor" HorizontalAlignment="Right" Width="100"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:TypeDescriptorControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid d:DataContext="{d:DesignInstance descriptors:TypeDescViewModel}">
+                        <Label Margin="0,0,100,0" MinHeight="26" VerticalContentAlignment="Center" BorderThickness="0" Padding="5" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <TextBlock Foreground="{StaticResource FieldDescriptor}"
+                                       Text="{Binding TypeDescriptor, UpdateSourceTrigger=PropertyChanged, Converter={StaticResource TypeConverter}}"
+                                       Background="Transparent"
+                                       TextWrapping="NoWrap"
+                                       FontWeight="Bold"
+                                       FontFamily="Consolas"
+                                       FontStyle="Italic"/>
+                        </Label>
+                        <Button Command="{Binding EditFieldDescriptorCommand, UpdateSourceTrigger=PropertyChanged}" Content="Edit Descriptor" HorizontalAlignment="Right" Width="100"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="{x:Type local:HandleControl}">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate>
+                    <Grid d:DataContext="{d:DesignInstance utils:HandleViewModel}">
+                        <TextBox Text="{Binding Handle, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                                 VerticalContentAlignment="Center"
+                                 HorizontalAlignment="Stretch"
+                                 VerticalAlignment="Stretch"
+                                 Background="Transparent"
+                                 BorderThickness="0"
+                                 Padding="5"
+                                 TextWrapping="NoWrap"
+                                 FontWeight="Bold"
+                                 FontFamily="Consolas"
+                                 FontStyle="Italic" Margin="0,0,100,0" MinHeight="26"/>
+                        <Button IsEnabled="False" Command="{Binding EditHandleCommand, UpdateSourceTrigger=PropertyChanged}" Content="Edit Handle" HorizontalAlignment="Right" Width="100"/>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>
