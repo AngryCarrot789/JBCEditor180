@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Windows.Input;
 using BCEdit180.Core.Editor.Classes.Annotations;
 using BCEdit180.Core.Utils;
 using JavaAsm;
@@ -48,7 +47,10 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
         private object constantValue;
         public object ConstantValue {
             get => this.constantValue;
-            set => this.RaisePropertyChanged(ref this.constantValue, value);
+            set {
+                this.RaisePropertyChanged(ref this.constantValue, value);
+                this.SetToConstNullCommand.RaiseCanExecuteChanged();
+            }
         }
 
         private bool isCreatedRuntime;
@@ -61,7 +63,7 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
 
         public AnnotationEditorViewModel InvisibleAnnotationEditor { get; }
 
-        public ICommand SetToConstNullCommand { get; }
+        public RelayCommand SetToConstNullCommand { get; }
 
         public FieldNode Node { get; private set; }
 
@@ -84,7 +86,7 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
             this.Node = node;
             this.VisibleAnnotationEditor = new AnnotationEditorViewModel();
             this.InvisibleAnnotationEditor = new AnnotationEditorViewModel();
-            this.SetToConstNullCommand = new RelayCommand(() => this.ConstantValue = null);
+            this.SetToConstNullCommand = new RelayCommand(() => this.ConstantValue = null, () => this.ConstantValue != null);
             this.Load(node);
         }
 
@@ -115,7 +117,7 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
 
         public void Save(ClassNode node) {
             if (this.Node == null) {
-                throw new Exception("No method node present");
+                throw new Exception("No field node present");
             }
 
             if (this.IsCreatedRuntime) {

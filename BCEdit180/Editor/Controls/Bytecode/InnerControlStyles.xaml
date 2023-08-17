@@ -15,7 +15,7 @@
                         <TextBlock FontFamily="Consolas" VerticalAlignment="Center" Text="→" Foreground="{DynamicResource ABrush.Foreground.Deeper}"/>
                         <TextBlock FontFamily="Consolas" VerticalAlignment="Center" Padding="2 0">
                             <Hyperlink Command="{Binding SelectJumpDestinationCommand}">
-                                <TextBlock Text="{Binding LabelIndex, UpdateSourceTrigger=PropertyChanged}" Foreground="{DynamicResource ConstNumeric}" ToolTip="The target branch label (which is where this case branches to). Click to scroll to the label" ToolTipService.ShowDuration="30000" Padding="2 0">
+                                <TextBlock Text="{Binding LabelIndex}" Foreground="{DynamicResource ConstNumeric}" ToolTip="The target branch label (which is where this case branches to). Click to scroll to the label" ToolTipService.ShowDuration="30000" Padding="2 0">
                                     <TextBlock.ContextMenu>
                                         <ContextMenu>
                                             <MenuItem Command="{Binding EditTargetLabelCommand}" Header="Edit target label" ToolTip="Edit the label which this case will branch to"/>

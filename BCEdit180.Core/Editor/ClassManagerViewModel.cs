@@ -2,10 +2,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
+using System.Threading.Tasks;
 using BCEdit180.Core.Editor.Classes;
-using BCEdit180.Core.Editor.FileSystem;
 using BCEdit180.Core.Editor.FileSystem.Physical;
+using BCEdit180.Core.Utils;
 using JavaAsm;
 using JavaAsm.CustomAttributes.Annotation;
 using JavaAsm.Instructions;
@@ -92,6 +92,69 @@ namespace BCEdit180.Core.Editor {
                     this.ActiveClass = klass;
                 }
             }
+        }
+
+        public async Task<ClassViewModel> OpenClassFromFile(string path, bool autoSelect = true) {
+            FileStream stream;
+            try {
+                stream = File.OpenRead(path);
+            }
+            catch (FileNotFoundException e) {
+                await IoC.MessageDialogs.ShowMessageExAsync("No such file", "File does not exist at " + path, e.GetToString());
+                return null;
+            }
+            catch (Exception e) {
+                await IoC.MessageDialogs.ShowMessageExAsync("Open File Error", "Failed to open file stream at " + path, e.GetToString());
+                return null;
+            }
+
+            // just in case...
+            ClassViewModel klass;
+            try {
+                klass = await this.OpenClassFromStreamAsync(stream, autoSelect);
+            }
+            finally {
+                stream.Close();
+            }
+
+            if (klass != null) {
+                klass.SetFilePath(path);
+            }
+
+            return klass;
+        }
+
+        public async Task<ClassViewModel> OpenClassFromStreamAsync(Stream stream, bool autoSelect = true) {
+            ClassNode node;
+            try {
+                // putting the using statement in here too just in case...
+                using (BufferedStream s = stream is BufferedStream ? (BufferedStream) stream : new BufferedStream(stream)) {
+                    node = await ClassFile.ParseClassAsync(s);
+                }
+            }
+            catch (Exception e) {
+                await IoC.MessageDialogs.ShowMessageExAsync("Parse Error", "Failed to parse class file from system", e.GetToString());
+                return null;
+            }
+
+            ClassViewModel klass = new ClassViewModel() {
+                ClassManager = this
+            };
+
+            try {
+                klass.Load(node);
+            }
+            catch (Exception e) {
+                await IoC.MessageDialogs.ShowMessageExAsync("Load Error", "Failed to load class object into UI", e.GetToString());
+                return null;
+            }
+
+            this.classes.Add(klass);
+            if (autoSelect) {
+                this.ActiveClass = klass;
+            }
+
+            return klass;
         }
 
         private static ClassNode CreateBlankClass() {

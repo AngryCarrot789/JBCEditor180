@@ -6,17 +6,21 @@ using JavaAsm.Instructions.Types;
 
 namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
     public abstract class BaseInstructionViewModel : BaseViewModel {
+        private Opcode opcode;
+        private bool isNewInstruction;
+        private bool isEnabled;
+        private int instructionIndex;
+        private BytecodeEditorViewModel bytecodeEditor;
+
         public Instruction Instruction { get; protected set; }
 
         public abstract IEnumerable<Opcode> AvailableOpCodes { get; }
 
-        private Opcode opcode;
         public Opcode Opcode {
             get => this.opcode;
             set => this.RaisePropertyChanged(ref this.opcode, value);
         }
 
-        private bool isNewInstruction;
         public bool IsNewInstruction {
             get => this.isNewInstruction;
             set => this.RaisePropertyChanged(ref this.isNewInstruction, value);
@@ -24,17 +28,22 @@ namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
 
         public virtual bool CanEditOpCode => true;
 
-        private bool isEnabled;
         public bool IsEnabled {
             get => this.isEnabled;
             set => this.RaisePropertyChanged(ref this.isEnabled, value);
         }
 
-        private int instructionIndex;
-
         public int InstructionIndex {
             get => this.instructionIndex;
             set => this.RaisePropertyChanged(ref this.instructionIndex, value);
+        }
+
+        /// <summary>
+        /// The editor that this instruction is currently placed in
+        /// </summary>
+        public virtual BytecodeEditorViewModel BytecodeEditor {
+            get => this.bytecodeEditor;
+            set => this.RaisePropertyChanged(ref this.bytecodeEditor, value);
         }
 
         public Action<BaseInstructionViewModel> DuplicateCallback { get; set; }

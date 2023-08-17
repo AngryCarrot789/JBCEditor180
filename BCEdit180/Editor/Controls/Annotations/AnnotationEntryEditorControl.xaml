@@ -16,10 +16,10 @@
         <GroupBox Background="{DynamicResource ABrush.Tone2.Background.Static}" HorizontalAlignment="Left" Width="202">
             <GroupBox.Header>
                 <Grid>
-                    <RadioButton x:Name="PrimitiveRadioButton" Width="100" Content="Primitive Type" GroupName="TypeSelector" IsChecked="{Binding IsPrimitive, UpdateSourceTrigger=PropertyChanged}"/>
+                    <RadioButton x:Name="PrimitiveRadioButton" Width="100" Content="Primitive Type" GroupName="TypeSelector" IsChecked="{Binding IsPrimitive}"/>
                 </Grid>
             </GroupBox.Header>
-            <StackPanel IsEnabled="{Binding IsChecked, ElementName=PrimitiveRadioButton, UpdateSourceTrigger=PropertyChanged}">
+            <StackPanel IsEnabled="{Binding IsChecked, ElementName=PrimitiveRadioButton}">
                 <RadioButton IsChecked="{Binding SelectedPrimitive, ConverterParameter={x:Static annotations:ElementValueTagXAML.Byte}, Converter={StaticResource EnumConverter}}" Content="Byte" VerticalAlignment="Top" Height="20"/>
                 <RadioButton IsChecked="{Binding SelectedPrimitive, ConverterParameter={x:Static annotations:ElementValueTagXAML.Short}, Converter={StaticResource EnumConverter}}" Content="Short" VerticalAlignment="Top" Height="20"/>
                 <RadioButton IsChecked="{Binding SelectedPrimitive, ConverterParameter={x:Static annotations:ElementValueTagXAML.Integer}, Converter={StaticResource EnumConverter}}" Content="Integer" VerticalAlignment="Top" Height="20"/>

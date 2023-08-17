@@ -67,7 +67,7 @@
     <TreeView Style="{StaticResource ThisTreeViewStyle}" ItemsSource="{Binding Exceptions, Mode=OneTime}" Background="Transparent">
         <TreeView.Resources>
             <HierarchicalDataTemplate DataType="{x:Type ex:ExceptionViewModel}">
-                <TreeViewItem IsExpanded="{Binding IsExpanded, UpdateSourceTrigger=PropertyChanged, Mode=TwoWay}" Header="{Binding Message}">
+                <TreeViewItem IsExpanded="{Binding IsExpanded, Mode=TwoWay}" Header="{Binding Message}">
                     <TreeViewItem Header="Inner Exceptions" ItemsSource="{Binding InnerExceptions}" Padding="0"
                                   Visibility="{Binding InnerExceptions.Count, Converter={StaticResource CollectionToVisibilityConverter}}" />
                     <TreeViewItem Header="Suppressed Exceptions" ItemsSource="{Binding SuppressedExceptions}" Padding="0"

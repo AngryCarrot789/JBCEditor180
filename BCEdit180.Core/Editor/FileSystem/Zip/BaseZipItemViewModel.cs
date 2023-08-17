@@ -1,8 +1,11 @@
+using System;
+using System.IO.Compression;
+
 namespace BCEdit180.Core.Editor.FileSystem.Zip {
     /// <summary>
-    /// The base class for items stored in a .jar file
+    /// The base class for items stored in a .zip or .jar file
     /// </summary>
-    public class BaseZipItemViewModel : BaseExplorerItemViewModel {
+    public abstract class BaseZipItemViewModel : BaseExplorerItemViewModel {
         /// <summary>
         /// The jar file that this file belongs in. This may equal <see cref="BaseExplorerItemViewModel.Parent"/> if
         /// this item is a root item in the .jar file
@@ -22,8 +25,10 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
 
         public string ZipFileName { get; private set; }
 
-        public BaseZipItemViewModel(ZipFileViewModel ownerZip) {
-            this.OwnerZip = ownerZip;
+        public ZipArchiveEntry Entry => this.OwnerZip.GetEntry(this.FullZipPath);
+
+        protected BaseZipItemViewModel(ZipFileViewModel ownerZip) {
+            this.OwnerZip = ownerZip ?? throw new ArgumentNullException(nameof(ownerZip));
         }
     }
 }

@@ -3,12 +3,10 @@ using JavaAsm.Instructions;
 using JavaAsm.Instructions.Types;
 
 namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
-    public class LabelViewModel : BaseInstructionViewModel, IBytecodeEditorAccess {
+    public class LabelViewModel : BaseInstructionViewModel {
         public override IEnumerable<Opcode> AvailableOpCodes => new Opcode[] {Opcode.None};
 
         public override bool CanEditOpCode => false;
-
-        public BytecodeEditorViewModel BytecodeEditor { get; set; }
 
         private long index;
         public long Index {

@@ -63,5 +63,21 @@ namespace BCEdit180.Core.Utils {
                 collection.Add(item);
             }
         }
+
+        public static int GetSortInsertionIndex<T>(IReadOnlyList<T> list, T item, Comparison<T> comparer) {
+            int left = 0;
+            int right = list.Count - 1;
+            while (left <= right) {
+                int middle = left + (right - left) / 2;
+                int comparison = comparer(item, list[middle]);
+                if (comparison < 0)
+                    right = middle - 1;
+                else if (comparison > 0)
+                    left = middle + 1;
+                else return middle;
+            }
+
+            return left;
+        }
     }
 }

@@ -1,3 +1,5 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using JavaAsm;
@@ -5,6 +7,8 @@ using JavaAsm;
 namespace BCEdit180.Core.Editor.Classes.Fields {
     public class FieldListViewModel : BaseViewModel {
         public ObservableCollection<FieldViewModel> Fields { get; }
+
+        private readonly List<FieldViewModel> removedFields;
 
         private FieldViewModel primarySelectedField;
 
@@ -33,9 +37,11 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
             this.Class = clazz;
             this.Fields = new ObservableCollection<FieldViewModel>();
             this.SelectedFields = new ObservableCollection<FieldViewModel>();
+            this.removedFields = new List<FieldViewModel>();
             this.DeleteSelectedFieldsCommand = new RelayCommand(() => {
                 foreach (FieldViewModel field in this.SelectedFields.ToList()) {
                     this.Fields.Remove(field);
+                    this.removedFields.Add(field);
                 }
             });
         }
@@ -52,6 +58,12 @@ namespace BCEdit180.Core.Editor.Classes.Fields {
         }
 
         public void Save(ClassNode node) {
+            foreach (FieldViewModel field in this.removedFields) {
+                if (field.Node == null || !node.Fields.Contains(field.Node))
+                    throw new Exception("Invalid field");
+                node.Fields.Remove(field.Node);
+            }
+
             foreach (FieldViewModel field in this.Fields) {
                 field.Save(node);
             }

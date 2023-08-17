@@ -92,7 +92,7 @@ namespace JavaAsm.Instructions.Types {
             return new Handle() {
                 Descriptor = this.Descriptor.Copy(),
                 Name = this.Name,
-                Owner = this.Owner != null ? new ClassName(this.Owner.Name) : null,
+                Owner = this.Owner?.Copy(),
                 Type = this.Type
             };
         }

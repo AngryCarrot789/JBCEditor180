@@ -1,10 +1,13 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Threading.Tasks;
 using JavaAsm;
 
 namespace BCEdit180.Core.Editor.Classes.Methods {
     public class MethodListViewModel : BaseViewModel {
+        private readonly List<MethodViewModel> removedMethods;
+
         public ObservableCollection<MethodViewModel> Methods { get; }
 
         private MethodViewModel primarySelectedMethod;
@@ -30,9 +33,11 @@ namespace BCEdit180.Core.Editor.Classes.Methods {
             this.Class = klass;
             this.Methods = new ObservableCollection<MethodViewModel>();
             this.SelectedMethods = new ObservableCollection<MethodViewModel>();
+            this.removedMethods = new List<MethodViewModel>();
             this.DeleteSelectedMethodsCommand = new RelayCommand(() => {
-                foreach (MethodViewModel field in this.SelectedMethods.ToList()) {
-                    this.Methods.Remove(field);
+                foreach (MethodViewModel method in this.SelectedMethods.ToList()) {
+                    this.Methods.Remove(method);
+                    this.removedMethods.Add(method);
                 }
             });
         }
@@ -53,6 +58,12 @@ namespace BCEdit180.Core.Editor.Classes.Methods {
         }
 
         public void Save(ClassNode node) {
+            foreach (MethodViewModel md in this.removedMethods) {
+                if (md.Node == null || !node.Methods.Contains(md.Node))
+                    throw new Exception("Invalid method");
+                node.Methods.Remove(md.Node);
+            }
+
             this.lastSaveIndex = this.PrimarySelectedIndex;
             foreach (MethodViewModel method in this.Methods) {
                 method.Save(node);

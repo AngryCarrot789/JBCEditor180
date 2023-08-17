@@ -3,7 +3,6 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using BCEdit180.Core.Editor.Classes.Annotations.Entries;
 using BCEdit180.Core.Editor.Classes.Descriptors;
-using JavaAsm;
 using JavaAsm.CustomAttributes.Annotation;
 
 namespace BCEdit180.Core.Editor.Classes.Annotations {

@@ -1,5 +1,3 @@
-using System;
-using System.Threading.Tasks;
 using BCEdit180.Core.Utils;
 using BCEdit180.Core.Views.Dialogs;
 using JavaAsm;

@@ -17,16 +17,16 @@
     <DockPanel>
         <StackPanel DockPanel.Dock="Top" Margin="12,12,12,15" Orientation="Vertical">
             <StackPanel>
-                <CheckBox IsChecked="{Binding FlagPublic, UpdateSourceTrigger=PropertyChanged}" Content="Public" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
-                <CheckBox IsChecked="{Binding FlagProtected, UpdateSourceTrigger=PropertyChanged}" Content="Protected" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
-                <CheckBox IsChecked="{Binding FlagPrivate, UpdateSourceTrigger=PropertyChanged}" Content="Private" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagPublic}" Content="Public" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagProtected}" Content="Protected" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagPrivate}" Content="Private" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
                 <Separator />
-                <CheckBox IsChecked="{Binding FlagStatic, UpdateSourceTrigger=PropertyChanged}" Content="Static" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagStatic}" Content="Static" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
                 <Separator />
-                <CheckBox IsChecked="{Binding FlagTransient, UpdateSourceTrigger=PropertyChanged}" Content="Transient" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
-                <CheckBox IsChecked="{Binding FlagVolatile, UpdateSourceTrigger=PropertyChanged}" Content="Volatile" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
-                <CheckBox IsChecked="{Binding FlagFinal, UpdateSourceTrigger=PropertyChanged}" Content="Final" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
-                <CheckBox IsChecked="{Binding FlagSynthetic, UpdateSourceTrigger=PropertyChanged}" Content="Synthetic" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagTransient}" Content="Transient" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagVolatile}" Content="Volatile" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagFinal}" Content="Final" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
+                <CheckBox IsChecked="{Binding FlagSynthetic}" Content="Synthetic" VerticalAlignment="Top" Margin="0 0 0 1" Height="20" />
             </StackPanel>
         </StackPanel>
         <Border DockPanel.Dock="Bottom" VerticalAlignment="Bottom" x:Name="ButtonBarBorder" Background="{DynamicResource ABrush.Tone4.Background.Static}" BorderBrush="{DynamicResource ABrush.Tone5.Border.Static}" BorderThickness="0,1,0,0">

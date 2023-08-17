@@ -44,8 +44,15 @@ namespace BCEdit180.Core.Editor.Classes.PropertyEditors.InnerClasses {
             }
         }
 
-        public InnerClassPropertyEditorViewModel() : base(typeof(InnerClassViewModel)) {
+        public AsyncRelayCommand EditClassAccess { get; }
 
+        public InnerClassPropertyEditorViewModel() : base(typeof(InnerClassViewModel)) {
+            this.EditClassAccess = new AsyncRelayCommand(async () =>
+            {
+                ClassAccessModifiers? access = await IoC.AccessEditors.EditClassAccessAsync(this.ClassAccess);
+                if (access.HasValue)
+                    this.ClassAccess = access.Value;
+            });
         }
 
         protected override void OnHandlersLoaded() {

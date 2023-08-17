@@ -1,10 +1,11 @@
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Windows.Input;
 using JavaAsm.Instructions;
 using JavaAsm.Instructions.Types;
 
 namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
-    public class JumpInstructionViewModel : BaseInstructionViewModel, IBytecodeEditorAccess, ILabelTargeter {
+    public class JumpInstructionViewModel : BaseInstructionViewModel, ILabelTargeter {
         public override IEnumerable<Opcode> AvailableOpCodes => new Opcode[] {Opcode.IFEQ, Opcode.IFNE, Opcode.IFLT, Opcode.IFGE, Opcode.IFGT, Opcode.IFLE, Opcode.IF_ICMPEQ, Opcode.IF_ICMPNE, Opcode.IF_ICMPLT, Opcode.IF_ICMPGE, Opcode.IF_ICMPGT, Opcode.IF_ICMPLE, Opcode.IF_ACMPEQ, Opcode.IF_ACMPNE, Opcode.GOTO, Opcode.JSR, Opcode.IFNULL, Opcode.IFNONNULL};
 
         private long labelIndex;
@@ -15,11 +16,9 @@ namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
 
         public ICommand SelectJumpDestinationCommand { get; }
 
-        private BytecodeEditorViewModel bytecodeEditor;
-        public BytecodeEditorViewModel BytecodeEditor {
-            get => this.bytecodeEditor;
+        public override BytecodeEditorViewModel BytecodeEditor {
             set {
-                this.bytecodeEditor = value;
+                base.BytecodeEditor = value;
                 this.EditTargetLabelCommand.RaiseCanExecuteChanged();
             }
         }
@@ -36,22 +35,22 @@ namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
             set => this.RaisePropertyChanged(ref this.jumpOffset, value);
         }
 
-        public RelayCommand EditTargetLabelCommand { get; }
+        public AsyncRelayCommand EditTargetLabelCommand { get; }
 
         public JumpInstructionViewModel() {
             this.SelectJumpDestinationCommand = new RelayCommand(this.SelectJumpDestinationAction);
-            this.EditTargetLabelCommand = new RelayCommand(this.EditTargetLabelAction, () => this.BytecodeEditor != null);
+            this.EditTargetLabelCommand = new AsyncRelayCommand(this.EditTargetLabelAction, () => this.BytecodeEditor != null);
         }
 
-        public void EditTargetLabelAction() {
+        public async Task EditTargetLabelAction() {
             if (this.BytecodeEditor != null) {
-                this.BytecodeEditor.EditBranchTargetAction(this);
+                await this.BytecodeEditor.EditBranchTargetAction(this);
             }
         }
 
         public void SelectJumpDestinationAction() {
             if (this.BytecodeEditor != null && this.TargetLabel != null) {
-                this.BytecodeEditor.SelectedInstruction = this.TargetLabel;
+                this.BytecodeEditor.PrimarySelectedInstruction = this.TargetLabel;
             }
         }
 

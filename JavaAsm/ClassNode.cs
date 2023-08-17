@@ -28,7 +28,6 @@ namespace JavaAsm {
 
         public List<AttributeNode> Attributes { get; set; } = new List<AttributeNode>();
 
-
         public string SourceFile { get; set; }
 
         public string SourceDebugExtension { get; set; }

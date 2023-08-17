@@ -19,12 +19,12 @@
                  Visibility="Collapsed"
                  AcceptsReturn="False"
                  AcceptsTab="False"
-                 TextWrapping="{Binding TextWrapping, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                 Foreground="{Binding Foreground, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                 FontFamily="{Binding FontFamily, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                 FontSize="{Binding FontSize, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                 FontStyle="{Binding FontStyle, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                 FontWeight="{Binding FontWeight, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
+                 TextWrapping="{Binding TextWrapping, ElementName=PART_Parent}"
+                 Foreground="{Binding Foreground, ElementName=PART_Parent}"
+                 FontFamily="{Binding FontFamily, ElementName=PART_Parent}"
+                 FontSize="{Binding FontSize, ElementName=PART_Parent}"
+                 FontStyle="{Binding FontStyle, ElementName=PART_Parent}"
+                 FontWeight="{Binding FontWeight, ElementName=PART_Parent}"
                  Text="{Binding Text, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
                  KeyDown="Editor_OnKeyDown"/>
         <TextBlock x:Name="PART_Preview"
@@ -33,12 +33,12 @@
                    Background="Transparent"
                    Padding="4 2"
                    Visibility="Visible"
-                   TextWrapping="{Binding TextWrapping, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                   Foreground="{Binding Foreground, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                   Text="{Binding Text, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                   FontFamily="{Binding FontFamily, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                   FontSize="{Binding FontSize, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                   FontStyle="{Binding FontStyle, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"
-                   FontWeight="{Binding FontWeight, ElementName=PART_Parent, UpdateSourceTrigger=PropertyChanged}"/>
+                   TextWrapping="{Binding TextWrapping, ElementName=PART_Parent}"
+                   Foreground="{Binding Foreground, ElementName=PART_Parent}"
+                   Text="{Binding Text, ElementName=PART_Parent}"
+                   FontFamily="{Binding FontFamily, ElementName=PART_Parent}"
+                   FontSize="{Binding FontSize, ElementName=PART_Parent}"
+                   FontStyle="{Binding FontStyle, ElementName=PART_Parent}"
+                   FontWeight="{Binding FontWeight, ElementName=PART_Parent}"/>
     </Grid>
 </UserControl>

@@ -14,7 +14,7 @@ namespace BCEdit180.Core.Editor.Classes.Bytecode {
 
         public CodeEditorViewModel(MethodViewModel methodInfo) {
             this.MethodInfo = methodInfo;
-            this.ByteCodeEditor = new BytecodeEditorViewModel();
+            this.ByteCodeEditor = new BytecodeEditorViewModel(this);
             this.ExceptionEditor = new ExceptionTableViewModel();
             this.LocalVariableTable = new LocalVariableTableViewModel();
             this.LocalVariableTypeTable = new LocalVariableTypeTableViewModel();

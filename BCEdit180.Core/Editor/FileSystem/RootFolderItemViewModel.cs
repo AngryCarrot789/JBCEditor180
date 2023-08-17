@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 namespace BCEdit180.Core.Editor.FileSystem {
-    public class RootFolderItemViewModel : BaseExplorerItemViewModel {
+    public class RootFolderItemViewModel : BaseExplorerItemViewModel, IExplorerFolder {
         private readonly ObservableCollection<BaseExplorerItemViewModel> items;
 
         /// <summary>
@@ -9,15 +10,34 @@ namespace BCEdit180.Core.Editor.FileSystem {
         /// </summary>
         public ReadOnlyObservableCollection<BaseExplorerItemViewModel> Items { get; }
 
+        IEnumerable<BaseExplorerItemViewModel> IExplorerFolder.Items => this.Items;
+
         public RootFolderItemViewModel() {
             this.items = new ObservableCollection<BaseExplorerItemViewModel>();
             this.Items = new ReadOnlyObservableCollection<BaseExplorerItemViewModel>(this.items);
         }
 
-        public void AddFile(BaseExplorerItemViewModel item) {
-            item.parent = this;
-            this.items.Add(item);
-            item.RaisePropertyChanged(nameof(item.Parent));
+        public override void SetExplorer(FileExplorerViewModel newExplorer) {
+            base.SetExplorer(newExplorer);
+            foreach (BaseExplorerItemViewModel item in this.items) {
+                item.SetExplorer(newExplorer);
+            }
+        }
+
+        public void AddFile(BaseExplorerItemViewModel item) => AddItem(this, this.items, this.items.Count, item);
+
+        public bool RemoveItem(BaseExplorerItemViewModel item) => RemoveItem(this.items, item);
+
+        public void RemoveItemAt(int index) => RemoveItemAt(this.items, index);
+
+        public void Clear() {
+            foreach (BaseExplorerItemViewModel item in this.items) {
+                if (item is IExplorerFolder folder) {
+                    folder.Clear();
+                }
+            }
+
+            this.items.Clear();
         }
     }
 }

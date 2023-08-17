@@ -46,7 +46,7 @@
                 <ControlTemplate>
                     <Grid d:DataContext="{d:DesignInstance anc:AnnotationViewModel}">
                         <TextBlock Text="{Binding Type.SimpleName}" Padding="5,3" FontSize="14" FontFamily="Consolas" Height="24" VerticalAlignment="Top"/>
-                        <TextBlock Text="{Binding Entries.Count, UpdateSourceTrigger=PropertyChanged, StringFormat={}{0} entries}" Margin="0,21,0,0" Padding="5,2"/>
+                        <TextBlock Text="{Binding Entries.Count, StringFormat={}{0} entries}" Margin="0,21,0,0" Padding="5,2"/>
                     </Grid>
                 </ControlTemplate>
             </Setter.Value>
@@ -132,7 +132,7 @@
                                     </Grid.ColumnDefinitions>
                                     <GroupBox Grid.Column="0" Style="{DynamicResource SquaredGroupBox}">
                                         <GroupBox.Header>
-                                            <TextBlock Text="{Binding Entries.Count, UpdateSourceTrigger=PropertyChanged, StringFormat='Entries ({0})', Mode=OneWay, FallbackValue='Entries'}" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Entries.Count, StringFormat='Entries ({0})', Mode=OneWay, FallbackValue='Entries'}" FontWeight="Bold"/>
                                         </GroupBox.Header>
                                         <ListBox x:Name="AnnotationEntryListBox" HorizontalAlignment="Stretch"
                                                  ItemsSource="{Binding Entries}" BorderThickness="0" 

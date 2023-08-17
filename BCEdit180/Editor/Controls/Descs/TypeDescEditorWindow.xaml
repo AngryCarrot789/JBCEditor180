@@ -26,13 +26,13 @@
                 <RowDefinition Height="24"/>
                 <RowDefinition Height="5"/>
             </Grid.RowDefinitions>
-            <GroupBox Background="{DynamicResource ABrush.Tone2.Background.Static}" Style="{StaticResource SquaredGroupBox}" IsEnabled="{Binding AllowClass, UpdateSourceTrigger=PropertyChanged}">
+            <GroupBox Background="{DynamicResource ABrush.Tone2.Background.Static}" Style="{StaticResource SquaredGroupBox}" IsEnabled="{Binding AllowClass}">
                 <GroupBox.Header>
                     <Grid>
-                        <RadioButton x:Name="ObjectRadioButton" Margin="2,0" Content="Object Type" GroupName="TypeSelector" IsChecked="{Binding IsObject, UpdateSourceTrigger=PropertyChanged}"/>
+                        <RadioButton x:Name="ObjectRadioButton" Margin="2,0" Content="Object Type" GroupName="TypeSelector" IsChecked="{Binding IsObject}"/>
                     </Grid>
                 </GroupBox.Header>
-                <Grid IsEnabled="{Binding ElementName=ObjectRadioButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}">
+                <Grid IsEnabled="{Binding ElementName=ObjectRadioButton, Path=IsChecked}">
                     <Label Padding="3" VerticalAlignment="Top" Height="24" VerticalContentAlignment="Center">
                         <TextBlock Text="Class Name (packages separated with '/' or '.')"/>
                     </Label>
@@ -51,13 +51,13 @@
                     <TextBox IsReadOnly="True" Text="{Binding PreviewClassName, Mode=OneWay}" VerticalAlignment="Top" Padding="3" Margin="85,96,0,0" Background="Transparent" BorderThickness="0" BorderBrush="Transparent"/>
                 </Grid>
             </GroupBox>
-            <GroupBox Grid.Row="2" Background="{DynamicResource ABrush.Tone2.Background.Static}" Style="{StaticResource SquaredGroupBox}" IsEnabled="{Binding AllowPrimitive, UpdateSourceTrigger=PropertyChanged}">
+            <GroupBox Grid.Row="2" Background="{DynamicResource ABrush.Tone2.Background.Static}" Style="{StaticResource SquaredGroupBox}" IsEnabled="{Binding AllowPrimitive}">
                 <GroupBox.Header>
                     <Grid>
-                        <RadioButton x:Name="PrimitiveRadioButton" Margin="2,0" Content="Primitive Type" GroupName="TypeSelector" IsChecked="{Binding IsPrimitive, UpdateSourceTrigger=PropertyChanged}"/>
+                        <RadioButton x:Name="PrimitiveRadioButton" Margin="2,0" Content="Primitive Type" GroupName="TypeSelector" IsChecked="{Binding IsPrimitive}"/>
                     </Grid>
                 </GroupBox.Header>
-                <Grid IsEnabled="{Binding ElementName=PrimitiveRadioButton, Path=IsChecked, UpdateSourceTrigger=PropertyChanged}" Margin="5,5,0,2">
+                <Grid IsEnabled="{Binding ElementName=PrimitiveRadioButton, Path=IsChecked}" Margin="5,5,0,2">
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>
                         <ColumnDefinition/>

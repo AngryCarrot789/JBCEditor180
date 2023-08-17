@@ -35,7 +35,7 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.Resources>
                         <DataTemplate DataType="{x:Type modal1:DialogButton}">
-                            <Button Content="{Binding Text, UpdateSourceTrigger=PropertyChanged, Mode=OneWay}"
+                            <Button Content="{Binding Text, Mode=OneWay}"
                                     Command="{Binding Command, Mode=OneTime}"
                                     ToolTip="{Binding ToolTip, Mode=OneWay}"
                                     HorizontalAlignment="Center" VerticalAlignment="Stretch"

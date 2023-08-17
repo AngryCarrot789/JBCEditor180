@@ -1,7 +1,6 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Net;
 using BCEdit180.Core.Views.Dialogs.UserInputs;
 using JavaAsm;
 

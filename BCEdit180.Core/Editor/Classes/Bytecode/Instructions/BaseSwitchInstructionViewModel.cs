@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 
 namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
-    public abstract class BaseSwitchInstructionViewModel  : BaseInstructionViewModel, IBytecodeEditorAccess {
+    public abstract class BaseSwitchInstructionViewModel  : BaseInstructionViewModel {
         private MatchLabelViewModel defaultLabel;
         public MatchLabelViewModel DefaultLabel {
             get => this.defaultLabel;
@@ -14,8 +14,6 @@ namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
             set => this.RaisePropertyChanged(ref this.defaultIndex, value);
         }
 
-        public BytecodeEditorViewModel BytecodeEditor { get; set; }
-
         public ObservableCollection<MatchLabelViewModel> MatchLabels { get; }
 
         private MatchLabelViewModel selectedLabel;
@@ -25,12 +23,13 @@ namespace BCEdit180.Core.Editor.Classes.Bytecode.Instructions {
         }
 
         public RelayCommand RemoveSelectedLabelCommand { get; }
-        public RelayCommand<MatchLabelViewModel> RemoveSelfCommand { get; }
+
+        public RelayCommand<MatchLabelViewModel> RemoveMatchCommand { get; }
 
         protected BaseSwitchInstructionViewModel() {
             this.MatchLabels = new ObservableCollection<MatchLabelViewModel>();
             this.RemoveSelectedLabelCommand = new RelayCommand(this.RemoveSelectedLabelAction);
-            this.RemoveSelfCommand = new RelayCommand<MatchLabelViewModel>(this.RemoveSelfAction);
+            this.RemoveMatchCommand = new RelayCommand<MatchLabelViewModel>(this.RemoveSelfAction);
         }
 
         protected void SetCallbacks(MatchLabelViewModel match) {

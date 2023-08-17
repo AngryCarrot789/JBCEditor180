@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO.Compression;
@@ -7,7 +8,7 @@ using BCEdit180.Core.Utils;
 
 namespace BCEdit180.Core.Editor.FileSystem.Zip {
     /// <summary>
-    /// A class that stores information and the file structure for a .jar file
+    /// A class that stores information and the file structure for a .zip or .jar file
     /// </summary>
     public class ZipFileViewModel : BaseIOFileItemViewModel, IZipFolder {
         private readonly ObservableCollection<BaseZipItemViewModel> items;
@@ -16,22 +17,36 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
 
         public string FullZipPath => null;
 
-        IReadOnlyList<BaseZipItemViewModel> IZipFolder.Items => this.Items;
+        IReadOnlyList<BaseZipItemViewModel> IZipFolder.ZipItems => this.Items;
+
+        IEnumerable<BaseExplorerItemViewModel> IExplorerFolder.Items => this.Items;
 
         /// <summary>
         /// A collection of items in this .jar file
         /// </summary>
         public ReadOnlyObservableCollection<BaseZipItemViewModel> Items { get; }
 
+        public ZipArchive Archive { get; }
+
         public ZipFileViewModel(string filePath) {
             this.items = new ObservableCollection<BaseZipItemViewModel>();
             this.Items = new ReadOnlyObservableCollection<BaseZipItemViewModel>(this.items);
             this.FilePath = filePath;
 
-            using (ZipArchive archive = ZipFile.OpenRead(filePath)) {
-                foreach (ZipArchiveEntry entry in archive.Entries) {
-                    ProcessEntry(this, entry);
-                }
+            this.Archive = ZipFile.OpenRead(filePath);
+            foreach (ZipArchiveEntry entry in this.Archive.Entries) {
+                ProcessEntry(this, entry);
+            }
+        }
+
+        ~ZipFileViewModel() {
+            this.Archive.Dispose();
+        }
+
+        public override void SetExplorer(FileExplorerViewModel newExplorer) {
+            base.SetExplorer(newExplorer);
+            foreach (BaseZipItemViewModel item in this.items) {
+                item.SetExplorer(newExplorer);
             }
         }
 
@@ -39,15 +54,42 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
             return Task.FromResult(this.items.Count > 0);
         }
 
-        public void AddSorted(BaseZipItemViewModel item) {
-            int index = BinarySearchInsertIndex(this, item);
-            this.InsertItem(index, item);
+        public void AddZipItemSorted(BaseZipItemViewModel item) {
+            this.InsertItem(BinarySearchInsertIndex(this, item), item);
         }
 
         public void InsertItem(int index, BaseZipItemViewModel item) {
-            item.parent = this;
-            this.items.Insert(index, item);
-            item.RaisePropertyChanged(nameof(item.Parent));
+            AddItem(this, this.items, index, item);
+        }
+
+        public bool RemoveItem(BaseExplorerItemViewModel item) {
+            if (!(item is BaseZipItemViewModel))
+                return false;
+            int index = this.items.IndexOf((BaseZipItemViewModel) item);
+            if (index == -1)
+                return false;
+            RemoveItemAt(this.items, index);
+            return true;
+        }
+
+        public void RemoveItemAt(int index) {
+            RemoveItemAt(this.items, index);
+        }
+
+        public void Clear() {
+            foreach (BaseZipItemViewModel item in this.items) {
+                if (item is ZipFolderEntryViewModel folder) {
+                    folder.Clear();
+                }
+            }
+
+            this.items.Clear();
+        }
+
+        public override void OnRemovingFromParent() {
+            base.OnRemovingFromParent();
+            this.Archive.Dispose();
+            GC.SuppressFinalize(this);
         }
 
         public static string GetFileName(string path, out bool isDirectory) {
@@ -79,29 +121,7 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
             }
         }
 
-        public static int BinarySearchInsertIndex(IZipFolder folder, BaseZipItemViewModel newItem) {
-            int left = 0;
-            int right = folder.Items.Count - 1;
-
-            while (left <= right) {
-                int middle = left + (right - left) / 2;
-                BaseZipItemViewModel middleItem = folder.Items[middle];
-
-                // Custom comparison logic based on your sorting criteria
-                int comparison = CompareItems(newItem, middleItem);
-
-                if (comparison < 0)
-                    right = middle - 1;
-                else if (comparison > 0)
-                    left = middle + 1;
-                else
-                    return middle; // Item with the same value already exists
-            }
-
-            return left; // Index to insert the new item
-        }
-
-        private static int CompareItems(BaseZipItemViewModel a, BaseZipItemViewModel b) {
+        private static readonly Comparison<BaseZipItemViewModel> SortComparer = (a, b) => {
             if (a is ZipFolderEntryViewModel) {
                 if (b is ZipFolderEntryViewModel) {
                     return string.Compare(a.ZipFileName, b.ZipFileName);
@@ -116,39 +136,46 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
             else {
                 return string.Compare(a.ZipFileName, b.ZipFileName);
             }
+        };
+
+        public static int BinarySearchInsertIndex(IZipFolder folder, BaseZipItemViewModel newItem) {
+            return CollectionUtils.GetSortInsertionIndex(folder.ZipItems, newItem, SortComparer);
         }
 
-        public static ZipFolderEntryViewModel GetOrCreateFolder(IZipFolder folder, string name) {
-            foreach (BaseZipItemViewModel item in folder.Items) {
+        public static ZipFolderEntryViewModel GetOrCreateFolder(IZipFolder container, string name) {
+            foreach (BaseZipItemViewModel item in container.ZipItems) {
                 if (item is ZipFolderEntryViewModel && item.ZipFileName == name) {
                     return (ZipFolderEntryViewModel) item;
                 }
             }
 
-            string root = folder.FullZipPath;
-            ZipFolderEntryViewModel f = new ZipFolderEntryViewModel(folder.OwnerZip) {
+            string root = container.FullZipPath;
+            ZipFolderEntryViewModel f = new ZipFolderEntryViewModel(container.OwnerZip) {
                 FullZipPath = (root != null ? root + name : name) + "/"
             };
 
-            f.AddSorted(f);
+            container.AddZipItemSorted(f);
             return f;
         }
 
-        public static ZipFileEntryViewModel CreateFile(IZipFolder folder, string name) {
-            foreach (BaseZipItemViewModel item in folder.Items) {
+        public static ZipFileEntryViewModel CreateFile(IZipFolder container, string name) {
+            foreach (BaseZipItemViewModel item in container.ZipItems) {
                 if (item is ZipFileEntryViewModel && item.ZipFileName == name) {
                     return (ZipFileEntryViewModel) item;
                 }
             }
 
-            string root = folder.FullZipPath;
-            ZipFileEntryViewModel file = new ZipFileEntryViewModel(folder.OwnerZip) {
+            string root = container.FullZipPath;
+            ZipFileEntryViewModel file = new ZipFileEntryViewModel(container.OwnerZip) {
                 FullZipPath = root != null ? (root + name) : name
             };
 
-            int index = BinarySearchInsertIndex(folder, file);
-            folder.InsertItem(index, file);
+            container.AddZipItemSorted(file);
             return file;
+        }
+
+        public ZipArchiveEntry GetEntry(string entryName) {
+            return this.Archive.GetEntry(entryName);
         }
     }
 }

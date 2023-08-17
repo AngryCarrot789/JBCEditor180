@@ -45,7 +45,7 @@
                          SelectionMode="Extended">
                     <ListBox.ItemTemplate>
                         <DataTemplate>
-                            <TextBlock Margin="0 0" Text="{Binding SimpleName, UpdateSourceTrigger=PropertyChanged}" Padding="0 2">
+                            <TextBlock Margin="0 0" Text="{Binding ReadableName}" Padding="0 2">
                                 <TextBlock.InputBindings>
                                     <MouseBinding MouseAction="LeftDoubleClick" Command="{Binding EditFieldDescriptorCommand}"/>
                                 </TextBlock.InputBindings>
