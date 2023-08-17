@@ -2,7 +2,7 @@ using System;
 
 namespace BCEdit180.Core.Interactivity {
     [Flags]
-    public enum FileDropType {
+    public enum DropType {
         None,
         Copy,
         Move,
