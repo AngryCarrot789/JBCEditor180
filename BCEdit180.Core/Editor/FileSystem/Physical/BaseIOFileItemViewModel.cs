@@ -19,7 +19,14 @@ namespace BCEdit180.Core.Editor.FileSystem.Physical {
             }
         }
 
-        public string FileName => string.IsNullOrWhiteSpace(this.FilePath) ? "" : Path.GetFileName(this.FilePath);
+        public string FileName {
+            get {
+                if (string.IsNullOrWhiteSpace(this.FilePath))
+                    return "";
+                string name = Path.GetFileName(this.FilePath);
+                return string.IsNullOrEmpty(name) ? this.FilePath : name;
+            }
+        }
 
         protected virtual void OnFilePathChanged() {
 

@@ -6,6 +6,8 @@ namespace BCEdit180.Core.Editor.FileSystem.Physical {
     /// A class for a regular file, such as a text document
     /// </summary>
     public class IOFileItemViewModel : BaseIOFileItemViewModel {
+        public string Items { get; set; }
+
         public IOFileItemViewModel(string filePath) {
             this.FilePath = filePath;
         }

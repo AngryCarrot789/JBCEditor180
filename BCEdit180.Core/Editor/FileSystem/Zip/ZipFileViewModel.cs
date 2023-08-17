@@ -26,21 +26,16 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
         /// </summary>
         public ReadOnlyObservableCollection<BaseZipItemViewModel> Items { get; }
 
-        public ZipArchive Archive { get; }
+        public ZipArchive Archive { get; private set; }
 
         public ZipFileViewModel(string filePath) {
             this.items = new ObservableCollection<BaseZipItemViewModel>();
             this.Items = new ReadOnlyObservableCollection<BaseZipItemViewModel>(this.items);
             this.FilePath = filePath;
-
-            this.Archive = ZipFile.OpenRead(filePath);
-            foreach (ZipArchiveEntry entry in this.Archive.Entries) {
-                ProcessEntry(this, entry);
-            }
         }
 
         ~ZipFileViewModel() {
-            this.Archive.Dispose();
+            this.Archive?.Dispose();
         }
 
         public override void SetExplorer(FileExplorerViewModel newExplorer) {
@@ -50,8 +45,23 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
             }
         }
 
-        protected override Task<bool> OnExpandAsync() {
-            return Task.FromResult(this.items.Count > 0);
+        protected override async Task<bool> OnExpandAsync() {
+            // Dynamically load zip file to reduce RAM when a zip is never explored
+            if (this.Archive == null) {
+                try {
+                    this.Archive = ZipFile.OpenRead(this.FilePath);
+                }
+                catch (Exception e) {
+                    await IoC.MessageDialogs.ShowMessageExAsync("Zip Failure", "Failed to read zip/jar file", e.GetToString());
+                    return false;
+                }
+
+                foreach (ZipArchiveEntry entry in this.Archive.Entries) {
+                    ProcessEntry(this, entry);
+                }
+            }
+
+            return this.items.Count > 0;
         }
 
         public void AddZipItemSorted(BaseZipItemViewModel item) {
@@ -76,19 +86,11 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
             RemoveItemAt(this.items, index);
         }
 
-        public void Clear() {
-            foreach (BaseZipItemViewModel item in this.items) {
-                if (item is ZipFolderEntryViewModel folder) {
-                    folder.Clear();
-                }
-            }
-
-            this.items.Clear();
-        }
+        public void Clear() => ClearItems(this.items);
 
         public override void OnRemovingFromParent() {
             base.OnRemovingFromParent();
-            this.Archive.Dispose();
+            this.Archive?.Dispose();
             GC.SuppressFinalize(this);
         }
 
@@ -175,7 +177,7 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
         }
 
         public ZipArchiveEntry GetEntry(string entryName) {
-            return this.Archive.GetEntry(entryName);
+            return this.Archive?.GetEntry(entryName);
         }
     }
 }

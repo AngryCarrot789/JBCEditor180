@@ -46,18 +46,8 @@ namespace BCEdit180.Core.Editor.FileSystem.Zip {
             return true;
         }
 
-        public void RemoveItemAt(int index) {
-            RemoveItemAt(this.items, index);
-        }
+        public void RemoveItemAt(int index) => RemoveItemAt(this.items, index);
 
-        public void Clear() {
-            foreach (BaseZipItemViewModel item in this.items) {
-                if (item is IExplorerFolder folder) {
-                    folder.Clear();
-                }
-            }
-
-            this.items.Clear();
-        }
+        public void Clear() => ClearItems(this.items);
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 using System.Threading.Tasks;
 using BCEdit180.Core.Editor.FileSystem.Zip;
 using BCEdit180.Core.Utils;
@@ -17,29 +18,24 @@ namespace BCEdit180.Core.Editor.FileSystem.Physical {
 
         IEnumerable<BaseExplorerItemViewModel> IExplorerFolder.Items => this.Items;
 
-        private bool hasDummyItem;
+        private bool hasFirstExpand;
 
         public IOFolderItemViewModel(string filePath) {
             this.items = new ObservableCollection<BaseIOFileItemViewModel>();
             this.Items = new ReadOnlyObservableCollection<BaseIOFileItemViewModel>(this.items);
-            this.hasDummyItem = true;
-            this.items.Add(null);
-
             this.FilePath = filePath;
         }
 
         public override void SetExplorer(FileExplorerViewModel newExplorer) {
             base.SetExplorer(newExplorer);
-            if (!this.hasDummyItem) {
-                foreach (BaseIOFileItemViewModel item in this.items) {
-                    item.SetExplorer(newExplorer);
-                }
+            foreach (BaseIOFileItemViewModel item in this.items) {
+                item.SetExplorer(newExplorer);
             }
         }
 
         protected override async Task<bool> OnExpandAsync() {
-            if (this.hasDummyItem) {
-                this.Clear();
+            if (!this.hasFirstExpand) {
+                this.hasFirstExpand = true;
                 if (!Directory.Exists(this.FilePath)) {
                     return false;
                 }
@@ -96,13 +92,7 @@ namespace BCEdit180.Core.Editor.FileSystem.Physical {
         };
 
         public void AddFile(BaseIOFileItemViewModel item) {
-            if (this.hasDummyItem) {
-                this.hasDummyItem = false;
-                this.items.Clear();
-            }
-
-            int index = CollectionUtils.GetSortInsertionIndex(this.Items, item, SortComparer);
-            AddItem(this, this.items, index, item);
+            AddItem(this, this.items, CollectionUtils.GetSortInsertionIndex(this.Items, item, SortComparer), item);
         }
 
         public bool RemoveItem(BaseExplorerItemViewModel item) {
@@ -117,18 +107,7 @@ namespace BCEdit180.Core.Editor.FileSystem.Physical {
 
         public void RemoveItemAt(int index) => RemoveItemAt(this.items, index);
 
-        public void Clear() {
-            if (this.hasDummyItem) {
-                this.hasDummyItem = false;
-            }
-            else {
-                for (int i = this.items.Count - 1; i >= 0; i--) {
-                    RemoveItemAt(this.items, i);
-                }
-            }
-
-            this.items.Clear();
-        }
+        public void Clear() => ClearItems(this.items);
 
         public override async Task RefreshAsync() {
             if (Directory.Exists(this.FilePath)) {

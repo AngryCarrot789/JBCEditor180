@@ -46,7 +46,7 @@ namespace BCEdit180.Core.Editor {
 
         private async Task ExplorerOnOpenZipFile(ZipFileEntryViewModel file) {
             ZipArchiveEntry entry = file.Entry;
-            if (entry == null) {
+            if (entry == null) { // parent zip not loaded???
                 return;
             }
 

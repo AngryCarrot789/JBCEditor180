@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BCEdit180.Core.Utils;
 
 namespace BCEdit180.Core.Editor.FileSystem {
     /// <summary>
@@ -18,6 +19,14 @@ namespace BCEdit180.Core.Editor.FileSystem {
         private bool isExpanded;
         private bool isExpanding;
 
+        /// <summary>
+        /// Whether or not this item has been expanded at least once by the user
+        /// </summary>
+        public bool HasExpandedOnce { get; private set; }
+
+        /// <summary>
+        /// Whether or not this item is currently expanded
+        /// </summary>
         public bool IsExpanded {
             get => this.isExpanded;
             set {
@@ -75,6 +84,10 @@ namespace BCEdit180.Core.Editor.FileSystem {
             }
 
             this.RaisePropertyChanged(nameof(this.IsExpanded));
+            if (!this.HasExpandedOnce) {
+                this.HasExpandedOnce = true;
+                this.RaisePropertyChanged(nameof(this.HasExpandedOnce));
+            }
         }
 
         protected virtual Task<bool> OnExpandAsync() {
@@ -108,6 +121,37 @@ namespace BCEdit180.Core.Editor.FileSystem {
                 return false;
             RemoveItemAt(items, index);
             return true;
+        }
+
+        public static void ClearItems<T>(IList<T> items) where T : BaseExplorerItemViewModel {
+            Exception ex = null;
+            foreach (T item in items) {
+                try {
+                    item.OnRemovingFromParent();
+                    item.parent = null;
+                    item.Explorer = null;
+                    item.RaisePropertyChanged(nameof(item.Parent));
+                }
+                catch (Exception e) {
+                    ex = e;
+                }
+            }
+
+            try {
+                items.Clear();
+            }
+            catch (Exception e) {
+                if (ex == null) {
+                    ex = e;
+                }
+                else {
+                    ex.AddSuppressed(e);
+                }
+            }
+
+            if (ex != null) {
+                throw ex;
+            }
         }
 
         /// <summary>

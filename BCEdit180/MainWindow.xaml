@@ -24,6 +24,9 @@
                 xmlns:fields="clr-namespace:BCEdit180.Core.Editor.Classes.Fields;assembly=BCEdit180.Core"
                 xmlns:methods="clr-namespace:BCEdit180.Core.Editor.Classes.Methods;assembly=BCEdit180.Core"
                 xmlns:fileSystem="clr-namespace:BCEdit180.Core.Editor.FileSystem;assembly=BCEdit180.Core"
+                xmlns:interactivity="clr-namespace:BCEdit180.Interactivity"
+                xmlns:local="clr-namespace:BCEdit180"
+                xmlns:controls="clr-namespace:BCEdit180.Controls"
                 mc:Ignorable="d"
                 Title="MainWindow" Width="1280" Height="720"
                 Style="{StaticResource CustomWindowStyleEx}"
@@ -92,36 +95,49 @@
                 <ColumnDefinition Width="*"/>
             </Grid.ColumnDefinitions>
             <Border Grid.Column="0" Background="{DynamicResource ABrush.Tone5.Background.Static}" BorderThickness="0">
-                <TreeView ItemsSource="{Binding Explorer.Root.Items}" Background="Transparent" BorderThickness="0" 
+                <Border.Resources>
+                    <local:DummyTreeItemStyleSelector x:Key="DummyTreeItemStyleSelector">
+                        <local:DummyTreeItemStyleSelector.DefaultStyle>
+                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                <Setter Property="ap:HandleRequestBringIntoView.IsEnabled" Value="True"/>
+                            </Style>
+                        </local:DummyTreeItemStyleSelector.DefaultStyle>
+                        <local:DummyTreeItemStyleSelector.WithDummyStyle>
+                            <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
+                                <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
+                                <Setter Property="ap:HandleRequestBringIntoView.IsEnabled" Value="True"/>
+                                <Setter Property="controls:TreeExtension.IsInitiallyExpandable" Value="{Binding HasExpandedOnce, Converter={StaticResource InvertBoolConverter}}"/>
+                            </Style>
+                        </local:DummyTreeItemStyleSelector.WithDummyStyle>
+                    </local:DummyTreeItemStyleSelector>
+                </Border.Resources>
+                <TreeView ItemsSource="{Binding Explorer.Root.Items}" Background="Transparent" BorderThickness="0"
                           acs:AdvancedContextMenu.ContextGenerator="{x:Static e:ExplorerContextGenerator.Instance}"
                           ScrollViewer.CanContentScroll="True"
                           VirtualizingStackPanel.IsVirtualizing="True"
                           VirtualizingStackPanel.VirtualizationMode="Recycling"
-                          VirtualizingStackPanel.ScrollUnit="Pixel">
+                          VirtualizingStackPanel.ScrollUnit="Pixel"
+                          interactivity:FileDropAttachments.DropHandler="{Binding Explorer}"
+                          ItemContainerStyleSelector="{StaticResource DummyTreeItemStyleSelector}">
                     <TreeView.InputBindings>
                         <KeyBinding Key="F5" Command="{x:Static fileSystem:BaseExplorerItemViewModel.RefreshCommand}" CommandParameter="{Binding RelativeSource={RelativeSource AncestorType={x:Type TreeView}}, Path=SelectedItem}"/>
                     </TreeView.InputBindings>
-                    <TreeView.ItemContainerStyle>
-                        <Style TargetType="{x:Type TreeViewItem}" BasedOn="{StaticResource {x:Type TreeViewItem}}">
-                            <Setter Property="IsExpanded" Value="{Binding IsExpanded, Mode=TwoWay}"/>
-                            <Setter Property="ap:HandleRequestBringIntoView.IsEnabled" Value="True"/>
-                        </Style>
-                    </TreeView.ItemContainerStyle>
                     <TreeView.Resources>
+                        <HierarchicalDataTemplate DataType="{x:Type jar:ZipFolderEntryViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
+                            <TextBlock Text="{Binding ZipFileName}" ToolTip="{Binding FullZipPath}"/>
+                        </HierarchicalDataTemplate>
+                        <HierarchicalDataTemplate DataType="{x:Type jar:ZipFileViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
+                            <TextBlock Text="{Binding FileName}"/>
+                        </HierarchicalDataTemplate>
+                        <DataTemplate DataType="{x:Type jar:ZipFileEntryViewModel}">
+                            <TextBlock Text="{Binding ZipFileName}" ToolTip="{Binding FullZipPath}"/>
+                        </DataTemplate>
                         <HierarchicalDataTemplate DataType="{x:Type physical:IOFolderItemViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
                             <TextBlock Text="{Binding FileName}"/>
                         </HierarchicalDataTemplate>
                         <DataTemplate DataType="{x:Type physical:IOFileItemViewModel}">
                             <TextBlock Text="{Binding FileName}"/>
-                        </DataTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type jar:ZipFileViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
-                            <TextBlock Text="{Binding FileName}"/>
-                        </HierarchicalDataTemplate>
-                        <HierarchicalDataTemplate DataType="{x:Type jar:ZipFolderEntryViewModel}" ItemsSource="{Binding Items, Mode=OneTime}">
-                            <TextBlock Text="{Binding ZipFileName}" ToolTip="{Binding FullZipPath}"/>
-                        </HierarchicalDataTemplate>
-                        <DataTemplate DataType="{x:Type jar:ZipFileEntryViewModel}">
-                            <TextBlock Text="{Binding ZipFileName}" ToolTip="{Binding FullZipPath}"/>
                         </DataTemplate>
                     </TreeView.Resources>
                 </TreeView>

@@ -30,14 +30,6 @@ namespace BCEdit180.Core.Editor.FileSystem {
 
         public void RemoveItemAt(int index) => RemoveItemAt(this.items, index);
 
-        public void Clear() {
-            foreach (BaseExplorerItemViewModel item in this.items) {
-                if (item is IExplorerFolder folder) {
-                    folder.Clear();
-                }
-            }
-
-            this.items.Clear();
-        }
+        public void Clear() => ClearItems(this.items);
     }
 }

@@ -77,6 +77,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Controls\TreeExtension.cs" />
     <Compile Include="Converters\ConstPreviewConverter.cs" />
     <Compile Include="Converters\EnumBooleanConverter.cs" />
     <Compile Include="Converters\EnumToStringConverter.cs" />
@@ -256,6 +257,7 @@
     <Compile Include="Views\Validators\NonEmptyStringValidationRule.cs" />
     <Compile Include="Views\WindowEx.cs" />
     <Compile Include="Views\WindowViewBase.cs" />
+    <Compile Include="DummyTreeItemStyleSelector.cs" />
     <Page Include="AdvancedContextService\ContextStyles.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
